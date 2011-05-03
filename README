@@ -1,3 +1,11 @@
-SEWS
+SEWS (Zeus) - Simple Erlang Web Server
 
-Simple Erlang Web Server
+Saker som bör kollas upp:
+ * Eunit
+ * Edoc
+ * Supervision Trees
+ * ??
+
+Alla måste även kunna lite grundläggande Git-administration, så att alla 
+kan bidra med kod. Ni kan börja med att spana in crashcoursen på 
+http://help.github.com/
