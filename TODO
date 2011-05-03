@@ -1,0 +1,8 @@
+1st iteration
+
+ SEWS ska kunna :
+  1. returnera ett specificerad dokument. 
+	(eller index-filen om bara en katalogsökväg angavs)
+  2. returnera ett 404 Not found om dokumentet inte hittades.
+  3. returnera en listvy (HTML) över filer i en katalog 
+	(om inte index-fil existerar)
