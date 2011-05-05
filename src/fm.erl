@@ -1,11 +1,11 @@
 
--module(filemanager).
+-module(fm).
 -export([getFile/1, getRow/2, getInfo/2, listDir/0]).
 
 %% 			INTERNAL FUNCTIONS
 
-listNonIndex() -> [].
-listIndex() -> [].
+listNonIndex() -> todo.
+listIndex() -> todo.
 
 getContentType(FileName) ->
 	case string:sub_word(FileName, 2, $.) of
@@ -40,7 +40,7 @@ getFileLines(IOstream, Acc) ->
 %%			EXPORTED FUNCTIONS
 %%
 
-listDir() -> [].
+listDir() -> todo.
 
 
 %%	getFile (FileName)
@@ -71,7 +71,7 @@ getFile(FileName) ->
 %% getRow (FileHandle, Row)
 %%
 
-getRow({FileList, _}, Row) -> TODO
+getRow({FileList, _}, Row) -> todo.
 
 
 %% getInfo (FileHandle, Info)
