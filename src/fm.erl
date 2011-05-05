@@ -1,6 +1,6 @@
 
 -module(fm).
--export([getFile/1, getRow/2, getInfo/2, listDir/0]).
+-export([getFile/1, getContents/1, getInfo/2, listDir/0]).
 
 %% 			INTERNAL FUNCTIONS
 
@@ -29,11 +29,11 @@ getFileInfo(FileName) ->
 getFileLines(IOstream, Acc) ->
 	case io:get_line(IOstream, "Prompt> ") of
 		eof ->
-			{ok, lists:reverse(Acc)};
+			{ok, Acc};
 		{error, Reason} ->
 			{error, Reason};
 		Data ->
-			getFileLines(IOstream, [Data | Acc])
+			getFileLines(IOstream, Acc ++ Data)
 	end.
 	
 	
@@ -48,7 +48,7 @@ listDir() -> todo.
 %%
 %%	Returns: {ok, FileHandle} if succesfull, {error, Reason} if not. Use FileHandle in all other file functions in this module.
 %%
-%%	Notes:	A file handle has the form of {ok, {File, Info}}. File is a list where each entry is one line from the file.
+%%	Notes:	A filehandle has the form of {File, Info}. File is a string containing the entire file.
 %%			Info contains any additional info about the file. This can be:
 %%
 %%			{contentType, 	<string>}		example: "image/jpeg"
@@ -68,10 +68,11 @@ getFile(FileName) ->
 	end.
 
 
-%% getRow (FileHandle, Row)
+%% 	getContents (FileHandle)
+%%	Type:	filehandle -> string
 %%
 
-getRow({FileList, _}, Row) -> todo.
+getContents({FileList, _}) -> FileList.
 
 
 %% getInfo (FileHandle, Info)
