@@ -2,7 +2,7 @@
 
 
 -module(testmall).
--export([new/0, size/1, add/3, value/2, key/2, delete/2, key_match/2]).
+-export([new/0, size/1, add/3, value/2, key/2, delete/2]).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -70,8 +70,8 @@ delete_test() ->
     F3 = delete(F2, finland),
     F4 = delete(F3, "norge"),
     
-    ?assertMatch(3, kv:size(F)),
-    ?assertMatch(2, kv:size(F2)),
-    ?assertMatch(1, kv:size(F3)),
-    ?_assertMatch(0, kv:size(F4)).
+    [?_assertMatch(3, kv:size(F)),
+    ?_assertMatch(2, kv:size(F2)),
+    ?_assertMatch(1, kv:size(F3)),
+    ?_assertMatch(0, kv:size(F4))].
     
