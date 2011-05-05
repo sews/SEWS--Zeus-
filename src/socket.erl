@@ -1,6 +1,7 @@
 -module(socket).
 -export([listen/1,listenSpawned/1]).
 
+-define(DEFAULT_PORT, 80).
 -define(TCP_OPTIONS, [binary, {packet, 0}, {active, false}, {reuseaddr, true}]).
 
 % Call echo:listen(Port) to start the service.
