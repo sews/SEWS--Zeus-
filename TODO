@@ -6,5 +6,3 @@
   2. returnera ett 404 Not found om dokumentet inte hittades.
   3. returnera en listvy (HTML) Ã¶ver filer i en katalog 
 	(om inte index-fil existerar)
-
-Per: krama en björn
