@@ -2,7 +2,7 @@
 
 
 -module(testmall).
--export([new/0, size/1, add/3, value/2, key/2, delete/2]).
+-export([]).
 
 -include_lib("eunit/include/eunit.hrl").
 

@@ -1,5 +1,7 @@
 %% Lägg alla tester i denna modul
-%% Alla tester bör avslutas med _test
+%% Alla testfunktioner bör avslutas med _test
+%% Exporta ingen funktion!
+%% För att köra alla tester, skriv test:test() i någon annan modul
 
 -module(test).
 -export([]).
