@@ -3,38 +3,38 @@
 -export([getFile/1, listDir/0]).
 
 
-listNonIndex() ->
-listIndex() ->
+listNonIndex() -> [].
+listIndex() -> [].
 
-listDir() ->
+listDir() -> [].
 
-getContentType(fileName) ->
-	case string:sub_word(fileName, 1, $.) of
+getContentType(FileName) ->
+	case string:sub_word(FileName, 2, $.) of
 		"jpg" ->
 			"image/jpeg";
 		"txt" ->
 			"text/plain";
 		"html" ->
-			"text/html"
-		Rest ->
+			"text/html";
+		_ ->
 			notype
 	end.
 	
-getCharset (fileName) ->
+getCharset (FileName) ->
 	"UTF-8".
 
-getFileInfo(fileName) ->
-	[	{contenttype, getContentType(fileName)},
-		{charset, getCharset(fileName)}		].
+getFileInfo(FileName) ->
+	[	{contenttype, getContentType(FileName)},
+		{charset, getCharset(FileName)}		].
 
-getFileLines(iostream) ->
-	case io:get_line(iostream) of
-		{ok, Data} ->
-			[Data | getFileLines(iostream)];
+getFileLines(IOstream, Acc) ->
+	case io:get_line(IOstream, "Prompt> ") of
 		eof ->
-			[];
-		{error, Reason} ->  {ok, File, Info} ->
-			hej	
+			{ok, lists:reverse(Acc)};
+		{error, Reason} ->
+			{error, Reason};
+		Data ->
+			getFileLines(IOstream, [Data | Acc])
 	end.
 	
 
@@ -49,11 +49,38 @@ getFileLines(iostream) ->
 %%
 %%
 
-getFile(fileName) -> 
-	case file:open(fileName, options) of
-		{ok, IOstream, getFileInfo(fileName)} ->
-			{ok, getFileLines(IOstream), getFileInfo(fileName)};
-		ErrorTuple ->
+getFile(FileName) -> 
+
+	Options = [read],
+
+	case file:open(FileName, Options) of
+		{ok, IOstream} ->
+			{_, Lines} = getFileLines(IOstream, []),
+			Info  = getFileInfo(FileName),
+			file:close(IOstream),
+			{ok, Lines, Info};
+		ErrorTuple ->	%% {error, Reason}
 			ErrorTuple
 	end.
+	
+%%	Typical error reasons:
+%%
+%%	enoent
+%%  The file does not exist.
+%%
+%%	eacces
+%%  Missing permission for reading the file or searching one of the parent directories.
+%%
+%%	eisdir
+%%  The named file is not a regular file. It may be a directory, a fifo, or a device.
+%%
+%%	enotdir
+%%  A component of the file name is not a directory. On some platforms, enoent is returned instead.
+%%
+%%	enospc
+%%  There is a no space left on the device (if write access was specified).
+
+		
+	
+		
 
