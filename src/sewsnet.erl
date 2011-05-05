@@ -5,10 +5,6 @@
 
 % Call echo:listen(Port) to start the service.
 
-%% TODO: Går inte att starta upp med port 80, måste fixas. Om man försöker:
-%%=ERROR REPORT==== 4-May-2011::11:32:21 ===
-%%Error in process <0.102.0> with exit value: {{badmatch,{error,eacces}},[{sewsnet,listenSpawned,1}]}
-
 listen(Port)->
     spawn(sewsnet,listenSpawned,[Port]). 
 		  
