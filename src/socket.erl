@@ -1,26 +1,33 @@
 -module(socket).
 -export([listen/1,listenSpawned/1]).
 
+%% @copyright © 2011 SEWS
+%% @version 0.1
+%% @title SEWS
+%% @doc 
+
 -define(DEFAULT_PORT, 80).
 -define(TCP_OPTIONS, [binary, {packet, 0}, {active, false}, {reuseaddr, true}]).
 
 % Call echo:listen(Port) to start the service.
 
+%% @doc Skapar en process som lyssnar på Port
 listen(Port)->
     spawn(socket,listenSpawned,[Port]). 
-		  
+
+%% @doc Lyssnar på port Port, med egenskaper från macro TCP_OPTIONS		  
 listenSpawned(Port) ->
     {ok, LSocket} = gen_tcp:listen(Port, ?TCP_OPTIONS),
     accept(LSocket).
 
+%% @doc skapar en ny workerprocess för varje request
 accept(LSocket) ->
     {ok, Socket} = gen_tcp:accept(LSocket),
-    spawn(fun() -> loop(Socket) end),
+    spawn(fun() -> worker(Socket) end),
     accept(LSocket).
 
-
-%%Ska nog inte vara en loop, nÃ¤r browsern fÃ¥tt sin fil borde anslutningen stÃ¤ngas.
-loop(Socket) ->
+%% @doc Workerprocess som hanterar en request och skickar tillbaka resultatet till klienten
+worker(Socket) ->
     case gen_tcp:recv(Socket, 0) of
         {ok, Data} ->
             %gen_tcp:send(Socket, Data),

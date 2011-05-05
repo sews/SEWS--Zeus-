@@ -1,11 +1,9 @@
 %% @author Per Wiberg <pewi678@student.uu.se>
-%% @author
-%% @author
-%% @author
-%% @author
-%% @author
-%% @copyright 2011 
-%% @version 1.0
+%% @copyright 2011 SEWS
+%% @version 0.1
 %% @title SEWS - Simple Erlang Web Server
+%% @doc 
 
-%% @doc A simpel webserver written in erlang.
+== Introduction ==
+
+A simpel web server written in erlang.
