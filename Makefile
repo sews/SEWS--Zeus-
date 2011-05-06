@@ -1,4 +1,7 @@
-
+#
+# TODO:	Lägg in en PATH som prefix för alla kommandon/filer
+#	Så make kan köras utanför src-katalogen.
+#
 # Add .erl files to ERL constant
 # ERL =  
 
