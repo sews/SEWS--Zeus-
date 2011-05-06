@@ -1,11 +1,10 @@
 
 -module(fm).
--export([getFile/1, getContents/1, getInfo/2, listDir/0]).
+-export([getFile/1, getContents/1, getInfo/2, listDir/1, getInfoAll/1]).
 
 %% 			INTERNAL FUNCTIONS
 
-listNonIndex() -> todo.
-listIndex() -> todo.
+listNoIndex(Dir) -> file:list_dir(Dir).
 
 getContentType(FileName) ->
 	case string:sub_word(FileName, 2, $.) of
@@ -16,7 +15,7 @@ getContentType(FileName) ->
 		"html" ->
 			"text/html";
 		_ ->
-			notype
+			"text/plain"
 	end.
 	
 getCharset (FileName) ->
@@ -38,48 +37,58 @@ getFileLines(IOstream, Acc) ->
 	
 	
 %%			EXPORTED FUNCTIONS
-%%
 
-listDir() -> todo.
+%%		listDir(Directory)
+%% @spec (Directory::string()) -> ok
+%% @doc	Returns the path to index.html if such a file exists, otherwise returns a list over all files in Directory.
+
+listDir(Dir) ->
+			case file:read_file_info(Dir ++ "index.html") of
+				{error, enoent} ->	%% index.html not found
+					listNoIndex(Dir);
+				{ok, _} ->
+					Dir ++ "index.html";
+				Kuk ->
+					Kuk
+			end.
 
 
-%%	getFile (FileName)
-%%	Type	string -> {ok, filehandle} | {error, string}
-%%
-%%	Returns: {ok, FileHandle} if succesfull, {error, Reason} if not. Use FileHandle in all other file functions in this module.
-%%
-%%	Notes:	A filehandle has the form of {File, Info}. File is a string containing the entire file.
-%%			Info contains any additional info about the file. This can be:
-%%
-%%			{contentType, 	<string>}		example: "image/jpeg"
-%%			{charset,		<string>}	
+%% @spec (FileName::string()) -> {FileData, FileInfo}
+%% @doc Returns {ok, FileHandle} if successfull, {error, Reason} if not. Use FileHandle in all other file functions in this module.
+%% Notes: A filehandle has the form of {File, Info}. File is a string containing the entire file.
+%% Info contains any additional info about the file. This can be:
+%% 
+%% {contenttype, <string>} example: "image/jpeg"
+%% {charset,<string>}.
 
 getFile(FileName) -> 
-	Options = [read],
-
-	case file:open(FileName, Options) of
-		{ok, IOstream} ->
-			{_, Lines} = getFileLines(IOstream, []),
-			Info  = getFileInfo(FileName),
-			file:close(IOstream),
-			{ok, {Lines, Info}};
+	case file:read_file(FileName) of
+		{ok, Bin} ->
+			{ok, {binary_to_list(Bin), getFileInfo(FileName)}};
+			%%{ok, {Lines, Info}};
 		ErrorTuple ->	%% {error, Reason}
 			ErrorTuple
 	end.
 
 
-%% 	getContents (FileHandle)
-%%	Type:	filehandle -> string
-%%
+%% 	 	getContents (FileHandle)
+%%  @doc 	Returns a string containing the entire file	
+%% @spec (FileHandle::{FileData, FileInfo}) -> List
 
 getContents({FileList, _}) -> FileList.
 
 
-%% getInfo (FileHandle, Info)
-%%
-%% Type:	filehandle * string -> string | false
-%%
-%% Returns:	The corresponding file info in filehandle FileHandle to the atom Info, or false if it is not found.
+%% 		getInfoAll (FileHandle)
+%%	@doc 	Returns a list containing {Infokey, Infovalue} pairs
+%% @spec (Filehandle()::{FileData, FileInfo}) -> List
+
+getInfoAll({_, InfoList}) -> InfoList.
+
+
+%% 	 	getInfo (FileHandle, Info)
+%% 	@doc	Returns the corresponding file info in filehandle FileHandle to the atom Info, or false if it is not found.
+%%			Example:	getInfo("hej.txt", contenttype)
+%% @spec (Filehandle()::{FileData, FileInfo}, List -> List
 	
 getInfo({_, InfoList}, Info) ->
 	case lists:keysearch(Info, 1, InfoList) of
