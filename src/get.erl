@@ -9,15 +9,24 @@
 
 
 %% @doc Handler
-handler({get, TL}) -> handler'(TL);
-handler({_, TupleList}) -> {error, notCorrectlyTagged}.
+handler({get, TL}) -> handlerAUX(TL);
+handler({_,_}) -> {error, notCorrectlyTagged}.
 
 %% @doc Takes an get-tupe with TupleList of GET headers, returns a TupleList with HTTP headers and a body.
-handler'([]) -> ok;
-handler'([{path, Path}|L]) ->
-	case filemanager:getFile(Path) of
-		{ok, File, Info} -> tbi;
-		{error, Reason} -> tbi
-	end;
-handler'([H|L]) -> handler'(L).
+
+handlerAUX([],Acc) -> list_to_binary(Acc);
+handlerAUX([H|L],Acc) -> 
+    case H of
+	{path, Path} ->
+	    case filemanager:getFile(Path) of
+		{ok, File, Info} -> tbi;  %% binary data to browser ? 
+		{error, Reason} -> {error,Reason}
+	    end;
+	{host, Host} ->
+	    case 
+	        {
+	Any -> handleAUX(L)
+    end.
+	    
+
 
