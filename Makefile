@@ -32,13 +32,14 @@ build: $(SRC)*.erl
 
 # Behöver utökas?
 # Test
-test: sewsmain.beam
-	$(TESTOP) sewsmain main 80
+test: build
+	$(TESTOP) sewsmain start 8888
 
 # Remove all .beam files discarding errors
 .PHONY: clean
 clean:
 	rm -f $(SRC)*.beam
+	rm -f *.beam
 
 # Removes all .beam files and compiles new
 rebuild: 
