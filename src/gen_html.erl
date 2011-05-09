@@ -3,24 +3,30 @@
 
 
 dirDoc(DirList, HList)-> 
-	Path = case lists:key_search(path, 1, HList) of
-		{value, P} ->
-			P;
-		false ->
-			error_mod:handler(nopath)
-	end,
-	Host = case lists:key_search(host, 1, HList) of
-		{value, H} ->
-			H;
-		false ->
-			error_mod:handler(nohost)
-	end,
+    Path = case lists:keysearch(path, 1, HList) of
+	       {value,{path, P}} ->
+		   P;
+	       false ->
+		   error_mod:handler(nopath)
+	   end,
+    Host = case lists:keysearch(host, 1, HList) of
+	       {value,{host, H}} ->
+		   H;
+	       false ->
+		   error_mod:handler(nohost)
+	   end,
     dirDocAux(DirList, Path, Host,[]).
-    
-%%Todo: title and stuff and optimize
+
+%% Todo: Make title show the path, optimize, fix the links so they work properly and sort them first according to type(directories/files) and then in lexographical order
 dirDocAux(DirList, Path, Host, [])->
     dirDocAux(DirList, Path, Host, "<HTML><HEAD><Title></title></HEAD><BODY>");
-dirDocAux([H|Rest], Path, Host, Html) ->
-    dirDocAux(Rest, Path, Host, Html ++ "<A HREF='" ++ Path ++ "'>" ++ H ++ "</A>" ++ "<BR>");
+dirDocAux([File|FileTail], Path, Host, Html) ->
+    IsDir = filelib:is_dir(Path ++ File),
+    if 
+	IsDir -> %% File refers to a directory
+	    dirDocAux(FileTail, Path, Host, Html ++ "Dir:<A HREF='" ++ Path ++ "'>" ++ File ++ "</A>" ++ "<BR>");
+	true -> %% File refers to a file
+	    dirDocAux(FileTail, Path, Host, Html ++ "File:<A HREF='" ++ Path ++ "'>" ++ File ++ "</A>" ++ "<BR>")
+    end;
 dirDocAux([], _, _, Html) ->
     Html ++ "</BODY></HTML>".
