@@ -20,7 +20,7 @@ handlerAUX([H|T],Acc) ->
 		{file,File_handle} ->
 		    list_to_binary(fm:getContents(File_handle));
 		{dirlist, DirList} ->
-		    gen_html:dirdoc(DirList);
+		    gen_html:dirDoc(DirList);
 		{error, Reason} ->
 		    error_mod:handler(Reason)
 	    end;
