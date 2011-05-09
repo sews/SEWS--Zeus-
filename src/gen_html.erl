@@ -15,7 +15,20 @@ dirDoc(DirList, HList)->
 	       false ->
 		   error_mod:handler(nohost)
 	   end,
-    dirDocAux(DirList, Path, Host,[]).
+    DirFileList = fm:filesAndDirs(DirList,Path),
+    OrderingFun = fun({Atom1,File1},{Atom2,File2})-> 
+		      File1Low = string:to_lower(File1),
+		      File2Low = string:to_lower(File2),
+		      if 
+			  Atom2 == isdir, Atom1 == isdir, File1Low > File2Low -> false;
+			  Atom2 == isfile,Atom1 == isfile, File1Low > File2Low -> false;
+			  Atom2 == isdir,Atom1 == isfile -> false;
+			  true -> true
+		      end
+		  end,
+    SortedDirList = lists:sort(OrderingFun,DirFileList),
+    FinishedDirList = lists:map(fun({_,File}) -> File end, SortedDirList),
+    dirDocAux(FinishedDirList, Path, Host,[]).
 
 %% Todo: Make title show the path, optimize, fix the links so they work properly and sort them first according to type(directories/files) and then in lexographical order
 dirDocAux(DirList, Path, Host, [])->
@@ -30,3 +43,4 @@ dirDocAux([File|FileTail], Path, Host, Html) ->
     end;
 dirDocAux([], _, _, Html) ->
     Html ++ "</BODY></HTML>".
+

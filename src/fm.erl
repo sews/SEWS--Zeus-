@@ -1,6 +1,6 @@
 
 -module(fm).
--export([getFile/1, getContents/1, getInfo/2, dirHandler/1, getInfoAll/1]).
+-export([getFile/1, getContents/1, getInfo/2, dirHandler/1, getInfoAll/1,filesAndDirs/2]).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -85,6 +85,23 @@ getContents({FileList, _}) -> FileList.
 getInfoAll({_, InfoList}) -> InfoList.
 
 
+
+%%Pre: A list of filenames and a path to were they are located
+%%Post: A list of tuples consisting the tuples were the first element is either the atom isdir if the file
+%%      is a directory or isfile if the file is a file and the second element is the filename
+%%Ex: filesAndDirs(["text.txt","Documents"],"/home/usr/") => [{isdir,"Documents"},{isfile,"text.txt"}]
+%%S-E: None(I think...)
+filesAndDirs([],_) -> [];
+filesAndDirs([File|FileTail],Path)->
+    IsDir = filelib:is_dir(Path ++ File),
+    if
+	IsDir ->
+	    [{isdir,File}|filesAndDirs(FileTail,Path)];
+	true -> 
+	    [{isfile,File}|filesAndDirs(FileTail,Path)]
+    end.
+
+
 %% 	 	getInfo (FileHandle, Info)
 %% 	@doc	Returns the corresponding file info in filehandle FileHandle to the atom Info, or false if it is not found.
 %%			Example:	getInfo("hej.txt", contenttype)
@@ -127,26 +144,3 @@ getInfoAll_test() ->
 	
 getContents_test() ->
 	?_assertMatch("hej jag ar en strang ur en fil", getContents({"hej jag ar en strang ur en fil", []})).
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		
-	
-		
-
