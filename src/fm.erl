@@ -1,12 +1,10 @@
 
 -module(fm).
--export([getFile/1, getContents/1, getInfo/2, listDir/1, getInfoAll/1]).
+-export([getFile/1, getContents/1, getInfo/2, dirHandler/1, getInfoAll/1]).
 
 -include_lib("eunit/include/eunit.hrl").
 
 %% 			INTERNAL FUNCTIONS
-
-listNoIndex(Dir) -> file:list_dir(Dir).
 
 getContentType(FileName) ->
 	case string:sub_word(FileName, 2, $.) of
@@ -34,30 +32,39 @@ getFileInfo(FileName) ->
 %% @spec (Directory::string()) -> ok
 %% @doc	Returns the path to index.html if such a file exists, otherwise returns a list over all files in Directory.
 
-listDir(Dir) ->
-			case file:read_file_info(Dir ++ "index.html") of
+dirHandler(Dir) ->
+			case file:read_file(Dir ++ "index.html") of
 				{error, enoent} ->	%% index.html not found
-					listNoIndex(Dir);
-				{ok, _} ->
-					Dir ++ "index.html";
+					{dirlist, file:list_dir(Dir)};
+				{ok, Bin} ->
+					{file, {binary_to_list(Bin), getFileInfo(Dir ++ "index.html")}};
+					%%{ok, Dir ++ "index.html"};
 				Kuk ->
 					Kuk
 			end.
 
 
 %% @spec (FileName::string()) -> {FileData, FileInfo}
-%% @doc Returns {ok, FileHandle} if successfull, {error, Reason} if not. Use FileHandle in all other file functions in this module.
-%% Notes: A filehandle has the form of {File, Info}. File is a string containing the entire file.
-%% Info contains any additional info about the file. This can be:
+%%
+%% @doc Returns 							{file, FileHandle} 				if file found. 
+%%	If FileName is a directory, returns 	{file, FileHandle}			 	if index.html is found. 
+%%	If index.html is not found, returns 	{dirlist, list of all files in directory FileName}
+%%  Otherwise returns 						{error, Reason}
+%%
+%%  Use FileHandle in all other file functions in this module.
+%%
+%%  Notes: A filehandle has the form of {File, Info}. File is a string containing the entire file.
+%%  Info contains any additional info about the file. This can be:
 %% 
-%% {contenttype, <string>} example: "image/jpeg"
-%% {charset,<string>}.
+%%  {contenttype, <string>} example: "image/jpeg"
+%%  {charset,<string>}.
 
 getFile(FileName) -> 
 	case file:read_file(FileName) of
 		{ok, Bin} ->
-			{ok, {binary_to_list(Bin), getFileInfo(FileName)}};
-			%%{ok, {Lines, Info}};
+			{file, {binary_to_list(Bin), getFileInfo(FileName)}};
+		{error, eisdir} ->
+			dirHandler(FileName);
 		ErrorTuple ->	%% {error, Reason}
 			ErrorTuple
 	end.
@@ -71,7 +78,7 @@ getContents({FileList, _}) -> FileList.
 
 
 %% 		getInfoAll (FileHandle)
-%%	@doc 	Returns a list containing {Infokey, Infovalue} pairs
+%%	@doc 	Returns a list containing all {Infokey, Infovalue} pairs from FileHandle
 %% @spec (Filehandle()::{FileData, FileInfo}) -> List
 
 getInfoAll({_, InfoList}) -> InfoList.
