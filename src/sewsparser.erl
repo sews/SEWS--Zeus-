@@ -2,7 +2,8 @@
 %% @doc Sews Parser: Parses the reqests to a format suitable to erlang.  
 %hej
 -module(sewsparser).
--export([parse/1]).
+%-export([parse/1]).
+-compile(export_all).
 
 
 %% For testing purposes only
