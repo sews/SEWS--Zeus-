@@ -2,6 +2,8 @@
 -module(fm).
 -export([getFile/1, getContents/1, getInfo/2, listDir/1, getInfoAll/1]).
 
+-include_lib("eunit/include/eunit.hrl").
+
 %% 			INTERNAL FUNCTIONS
 
 listNoIndex(Dir) -> file:list_dir(Dir).
@@ -24,16 +26,6 @@ getCharset (FileName) ->
 getFileInfo(FileName) ->
 	[	{contenttype, getContentType(FileName)},
 		{charset, getCharset(FileName)}		].
-
-getFileLines(IOstream, Acc) ->
-	case io:get_line(IOstream, "Prompt> ") of
-		eof ->
-			{ok, Acc};
-		{error, Reason} ->
-			{error, Reason};
-		Data ->
-			getFileLines(IOstream, Acc ++ Data)
-	end.
 	
 	
 %%			EXPORTED FUNCTIONS
@@ -115,6 +107,36 @@ getInfo({_, InfoList}, Info) ->
 %%
 %%	enospc
 %%  There is a no space left on the device (if write access was specified).
+
+
+%% TEST CASES
+
+getInfo_test() ->
+	?_assertMatch("text/html", getInfo({[], [{contenttype, "text/html"}]}, contenttype)).
+	
+getInfoAll_test() ->
+	?_assertMatch([{contenttype, "text/html"}], getInfoAll({[], [{contenttype, "text/html"}]})).
+	
+getContents_test() ->
+	?_assertMatch("hej jag ar en strang ur en fil", getContents({"hej jag ar en strang ur en fil", []})).
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		
 	
