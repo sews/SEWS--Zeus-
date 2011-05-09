@@ -1,5 +1,5 @@
 
-%% @doc Sews Parser: Parses the reqests to the server to a format suitable to erlang.  
+%% @doc Sews Parser: Parses the reqests to a format suitable to erlang.  
 
 -module(sewsparser).
 -export([parse/1]).
@@ -19,8 +19,6 @@ string()->
 %% possible tuples: {path, Path}, {host, Host}, {connection, Connection}
 %% S-E: None 
 %% Ex: sewsparser:parse("GET /"). -> {get,[{path,"/index.html"}]}
-
-%% TODO?: Impliment more calls then GET or POST?
 
 parse(Input)->
     L = string:tokens(Input,"\n"),
@@ -48,7 +46,7 @@ parseGET([],Parsed_list)->
 parseGET([[H|T2]|T], []) ->
     case H of
         [$/|Rest]-> parseGET(T,[{path,H}]);
-        Any -> {error, badly_formed} % Kan vara badly formed även om den inte går in här såklart
+        Any -> {error, badly_formed} 
     end;
 parseGET([[H|T2]|T],Parsed_list) ->
 	    case H of
@@ -68,7 +66,7 @@ parseGET([[H|T2]|T],Parsed_list) ->
 		    parseGET(T,[{accept_charset,T2}|Parsed_list]);
 		"Keep-Alive:" ->
 		    parseGET(T,[{keep_alive,T2}|Parsed_list]);
-		Any -> parseGET(T, Parsed_list) %%% Impliment more later
+		Any -> parseGET(T, Parsed_list)
     end.
 
 
