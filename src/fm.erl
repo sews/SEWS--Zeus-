@@ -35,7 +35,8 @@ getFileInfo(FileName) ->
 dirHandler(Dir) ->
 			case file:read_file(Dir ++ "index.html") of
 				{error, enoent} ->	%% index.html not found
-					{dirlist, file:list_dir(Dir)};
+					{ok, TheDir} = file:list_dir(Dir),
+					{dirlist, TheDir};
 				{ok, Bin} ->
 					{file, {binary_to_list(Bin), getFileInfo(Dir ++ "index.html")}};
 					%%{ok, Dir ++ "index.html"};
