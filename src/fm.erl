@@ -30,13 +30,26 @@ getFileInfo(FileName) ->
 
 %%		listDir(Directory)
 %% @spec (Directory::string()) -> ok
-%% @doc	Returns the path to index.html if such a file exists, otherwise returns a list over all files in Directory.
+%% @doc	Returns the path to index.html if such a file exists, otherwise returns a sorted list over all files in Directory (eg all directories are placed before all
+%%																																					files)
 
 dirHandler(Dir) ->
 			case file:read_file(Dir ++ "index.html") of
 				{error, enoent} ->	%% index.html not found
-					{ok, TheDir} = file:list_dir(Dir),
-					{dirlist, TheDir};
+					{ok, DirList} = file:list_dir(Dir),
+					dirSort = fun(File1, File2) ->
+						File1Dir = filelib:is_dir(Dir ++ File1),
+						File2Dir = filelib:is_dir(Dir ++ File2),
+						File1Low = string:to_lower(File1),
+						File2Low = string:to_lower(File2),
+						if
+							File2Dir, File1Dir, File1Low > File2Low -> false;
+							File2Dir == false, File1Dir == false, File1Low > File2Low -> false;
+							File2Dir, File1Dir == false -> false;
+							true -> true
+						end
+					end,
+					{dirlist, lists:sort(dirSort, DirList)};
 				{ok, Bin} ->
 					{file, {binary_to_list(Bin), getFileInfo(Dir ++ "index.html")}};
 					%%{ok, Dir ++ "index.html"};
