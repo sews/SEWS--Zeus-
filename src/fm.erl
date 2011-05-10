@@ -98,7 +98,7 @@ filesAndDirs([File|FileTail],Path)->
 	IsDir ->
 	    [{isdir,File}|filesAndDirs(FileTail,Path)];
 	true -> 
-	    [{isfile,File}|filesAndDirs(FileTail,Path)]
+	    [{isfile, File}|filesAndDirs(FileTail,Path)]
     end.
 
 

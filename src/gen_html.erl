@@ -27,19 +27,18 @@ dirDoc(DirList, HList)->
 		      end
 		  end,
     SortedDirList = lists:sort(OrderingFun,DirFileList),
-    FinishedDirList = lists:map(fun({_,File}) -> File end, SortedDirList),
-    dirDocAux(FinishedDirList, Path, Host,[]).
+    dirDocAux(SortedDirList, Path, Host,[]).
 
 %% Todo: Make title show the path, optimize, fix the links so they work properly and sort them first according to type(directories/files) and then in lexographical order
 dirDocAux(DirList, Path, Host, [])->
     dirDocAux(DirList, Path, Host, "<HTML><HEAD><Title></title></HEAD><BODY>");
-dirDocAux([File|FileTail], Path, Host, Html) ->
-    IsDir = filelib:is_dir(Path ++ File),
-    if 
-	IsDir -> %% File refers to a directory
+dirDocAux([{Atom,File}|FileTail], Path, Host, Html) ->
+    case Atom of
+	 isdir -> %% File refers to a directory
 	    dirDocAux(FileTail, Path, Host, Html ++ "Dir:<A HREF='" ++ Path ++ "'>" ++ File ++ "</A>" ++ "<BR>");
-	true -> %% File refers to a file
-	    dirDocAux(FileTail, Path, Host, Html ++ "File:<A HREF='" ++ Path ++ "'>" ++ File ++ "</A>" ++ "<BR>")
+	isfile -> %% File refers to a file
+	    dirDocAux(FileTail, Path, Host, Html ++ "File:<A HREF='" ++ Path ++ "'>" ++ File ++ "</A>" ++ "<BR>");
+	Any  -> dirDocAux(FileTail, Path, Host, Html ++ "Error:<A HREF='" ++ Path ++ "'>" ++ File ++ "</A>" ++ "<BR>")
     end;
 dirDocAux([], _, _, Html) ->
     Html ++ "</BODY></HTML>".
