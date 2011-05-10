@@ -1,6 +1,6 @@
 
 -module(fm).
--export([getFile/1, getContents/1, getInfo/2, dirHandler/1, getInfoAll/1,filesAndDirs/2]).
+-export([getFile/1, getContents/1, getInfo/2, dirHandler/1, getInfoAll/1,filesAndDirs/2, fixPath/1]).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -73,6 +73,19 @@ dirHandler(Dir) ->
 			end;
 		false ->
 			error_mod:handler(enotexist)
+	end.
+	
+fixPath (Path) ->
+	case filelib:is_dir(Path) of
+		true ->
+			case lists:last(Path) of
+				$/ ->
+					Path;
+				_ ->
+					Path ++ "/"
+			end;
+		false ->
+			Path
 	end.
 
 

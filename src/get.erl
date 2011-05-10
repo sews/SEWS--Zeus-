@@ -17,10 +17,15 @@ handlerAUX(HList) ->
     case lists:keysearch(path, 1, HList) of
 	{value,{path, Path}} ->
 	    case fm:getFile(Path) of
-		{file,File_handle} ->
+		{ok ,File_handle} ->
 		    list_to_binary(fm:getContents(File_handle));
-		{dirlist, DirList} ->
-		    gen_html:dirDoc(DirList, HList);
+		{error, eisdir} ->
+		    case fm:dirHandler(Path) of
+			{ok, DirList} -> 
+			    gen_html:dirDoc(DirList, HList);
+			ErrorBin ->
+			    ErrorBin
+		    end;
 		{error, Reason} ->
 		    error_mod:handler(Reason)
 	    end;
