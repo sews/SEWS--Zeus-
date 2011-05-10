@@ -19,7 +19,7 @@ dirDoc(DirList, HList)->
 
 %% Todo: Make title show the path, optimize, fix the links so they work properly and sort them first according to type(directories/files) and then in lexographical order
 dirDocAux(DirList, Path, Host, [])->
-    dirDocAux(DirList, Path, Host, "<HTML><HEAD><Title></title></HEAD><BODY>");
+    dirDocAux(DirList, Path, Host, "<html><head><title>" ++ Path ++ "</title></head><body>");
 dirDocAux([File|FileTail], Path, Host, Html) ->
     IsDir = filelib:is_dir(Path ++ File),
     case IsDir of
