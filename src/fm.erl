@@ -61,7 +61,9 @@ dirHandler(Dir) ->
 					{error, eisfile}
 			end;
 		false ->
-			error_mod:handler(enoent)
+			%% file not found
+			{error, enoent}
+			%%error_mod:handler(enoent)
 	end.
 	
 fixPath (Path) ->
@@ -104,6 +106,8 @@ getFile(FileName) ->
 			{ok, {binary_to_list(Bin), getFileInfo(FileName)}};
 		{error, eisdir} ->
 			{error, eisdir};
+		{error, enoent} ->
+			{error, enoent};
 		{error, Reason} ->
 			error_mod:handler(Reason)
 	end.

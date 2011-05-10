@@ -21,11 +21,16 @@ handlerAUX(HList) ->
 			{ok, File_handle} ->
 				list_to_binary(fm:getContents(File_handle));
 			{error, eisdir} ->
-				case fm:dirHandler(Path) of
-					{ok, DirList} -> 
-						gen_html:dirDoc(DirList, HList);
-					{error_eval, Bin} ->
-						Bin
+				case fm:getFile(Path ++ "index.html") of
+					{ok, File_handle} ->
+						list_to_binary(fm:getContents(File_handle));
+					{error, enoent} ->	
+						case fm:dirHandler(Path) of
+							{ok, DirList} -> 
+								gen_html:dirDoc(DirList, HList);
+							{error_eval, Bin} ->
+								Bin
+						end
 				end;
 			{error, Reason} ->
 				{error_eval, Bin} = error_mod:handler(Reason),
