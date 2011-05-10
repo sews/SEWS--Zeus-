@@ -29,7 +29,7 @@ handlerAUX(HList) ->
 				end;
 			{error, Reason} ->
 				{error_eval, Bin} = error_mod:handler(Reason),
-				Bin
+				Bin;
 			{error_eval, Bin} ->
 				Bin
 		end;
