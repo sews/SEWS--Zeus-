@@ -24,9 +24,9 @@ dirDocAux([File|FileTail], Path, Host, Html) ->
     IsDir = filelib:is_dir(Path ++ File),
     case IsDir of
 	 true -> %% File refers to a directory
-	    dirDocAux(FileTail, Path, Host, Html ++ "Dir:<A HREF='" ++ Path ++ "'>" ++ File ++ "</A>" ++ "<BR>");
+	    dirDocAux(FileTail, Path, Host, Html ++ "Dir:<A HREF='" ++ Path ++ File ++ "'>" ++ File ++ "</A>" ++ "<BR>");
 	false -> %% File refers to a file
-	    dirDocAux(FileTail, Path, Host, Html ++ "File:<A HREF='" ++ Path ++ "'>" ++ File ++ "</A>" ++ "<BR>")
+	    dirDocAux(FileTail, Path, Host, Html ++ "File:<A HREF='" ++ Path ++ File ++ "'>" ++ File ++ "</A>" ++ "<BR>")
     end;
 dirDocAux([], _, _, Html) ->
     Html ++ "</BODY></HTML>".
