@@ -8,7 +8,7 @@
 
 %% For testing purposes only
 string()->
-    "GET /favicon.ico HTTP/1.1\r\nHost: 127.0.0.1:8888\r\nUser-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:2.0.1) Gecko/20100101 Firefox/4.0.1\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\nAccept-Language: en-us,en;q=0.5\r\nAccept-Encoding: gzip, deflate\r\nAccept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r\nKeep-Alive: 115\r\nConnection: keep-alive\r\n\r\n".
+    "GET /home/dennisrosen/big alex on horse.txt HTTP/1.1\r\nHost: 127.0.0.1:8888\r\nUser-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:2.0.1) Gecko/20100101 Firefox/4.0.1\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\nAccept-Language: en-us,en;q=0.5\r\nAccept-Encoding: gzip, deflate\r\nAccept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r\nKeep-Alive: 115\r\nConnection: keep-alive\r\n\r\n".
 
 
 
@@ -23,7 +23,7 @@ string()->
 
 parse(Input)->
     L = string:tokens(Input,"\n"),
-    [H|T] = lists:map(fun(X) -> string:tokens(X," \r\007") end,L),
+    [H|T] = lists:map(fun(X) -> string:tokens(X,"%20 \r\007") end,L),
     [H1|Rest] = H,
     case H1 of
         "GET" -> parseGET([Rest|T],[]);
@@ -40,13 +40,26 @@ parse(Input)->
 %% Post: A tupple of the format {get, Tuple_list} or {error, Reason}, where Tuple_list consists of tuples of the format {header_atom(), Data}
 %% S-E None
 %% TODO: Implementera för fler headers 
+
+stripShit ([]) -> [];
+stripShit ([H1]) -> [H1];
+stripShit ([H1, H2]) -> [H1, H2];
+stripShit ([H1,H2,H3 | Rest]) ->
+	case [H1, H2, H3] of
+		"%20" ->
+			" " ++ stripShit(Rest);
+		 _ ->
+			[H1 | stripShit([H2,H3 | Rest])]
+	end.
+
 parseGET([[]],Parsed_list) ->
     {get, Parsed_list};
 parseGET([],Parsed_list)->
     {get, Parsed_list};
 parseGET([H|T], []) ->
     {Path,_} = lists:split(length(H)-1,H),
-    parseGET(T,[{path,string:join(fm:fixPath(Path)," ")}]);
+    PathStripped = stripShit(string:join(Path, " ")),
+    parseGET(T,[{path,fm:fixPath(PathStripped)}]);
 
 parseGET([[H|T2]|T],Parsed_list) ->
 	    case H of

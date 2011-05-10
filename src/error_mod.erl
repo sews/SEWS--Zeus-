@@ -4,5 +4,5 @@
 handler(Reason) ->
 	case Reason of
 		Reason ->
-			{error_eval, list_to_binary("hej")}
+			{error_eval, list_to_binary(atom_to_list(Reason))}
 	end.

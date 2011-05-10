@@ -67,13 +67,13 @@ dirHandler(Dir) ->
 	end.
 	
 fixPath (Path) ->
-	case filelib:is_dir(Path) of
+	Path1 = case Path of	%% check for "/" at start of path
+		[$/ | _] ->	Path;
+		_		 ->
+			[$/ | Path]
+	end,
+	case filelib:is_dir(Path1) of
 		true ->
-			Path1 = case Path of	%% check for "/" at start of path
-				[$/ | _] ->	Path;
-				_		 ->
-					[$/ | Path]
-			end,
 			case lists:last(Path1) of	%% check for "/" at end of path
 				$/ ->
 					Path1;
@@ -81,7 +81,7 @@ fixPath (Path) ->
 					Path1 ++ "/"
 			end;
 		false ->
-			Path
+			Path1
 	end.
 
 

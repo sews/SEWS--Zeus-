@@ -38,8 +38,8 @@ handler(Socket) ->
 				Bin
 		end,
 	    %% Skriver ut inkommande och utgående trafik i erlang-skalet
-	    %% io:format("Request: ~n~p~n",[Indata]), %% <- Reqesten som skickades in
-	    %%io:format("Answer: ~n~p~n",[Outdata]), %% <- Svaret som skickas tillbaka
+	     io:format("Request: ~n~p~n",[Indata]), %% <- Reqesten som skickades in
+	    io:format("Answer: ~n~p~n",[Outdata]), %% <- Svaret som skickas tillbaka
 	    %% Skickar tillbaka och stänger socketen
 	    gen_tcp:send(Socket, Outdata),
 	    gen_tcp:close(Socket);
