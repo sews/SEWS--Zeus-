@@ -64,7 +64,7 @@ dirHandler(Dir) ->
 									true -> true
 								end
 							end,
-							{dirlist, lists:sort(DirSort, DirListStripped)};
+							{ok, lists:sort(DirSort, DirListStripped)};
 						{error, Reason} ->
 							error_mod:handler(Reason)
 					end;
@@ -94,12 +94,12 @@ dirHandler(Dir) ->
 getFile(FileName) -> 
 	case file:read_file(FileName) of
 		{ok, Bin} ->
-			{file, {binary_to_list(Bin), getFileInfo(FileName)}};
+			{ok, {binary_to_list(Bin), getFileInfo(FileName)}};
 		{error, eisdir} ->
 			{error, eisdir};
 			%%dirHandler(FileName);
-		ErrorTuple ->	%% {error, Reason}
-			ErrorTuple
+		{error, Reason} ->	%% {error, Reason}
+			error_mod:handler(Reason)
 	end.
 
 
