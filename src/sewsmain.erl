@@ -30,11 +30,12 @@ handler(Socket) ->
 	    Outdata = 
 		case Parsed of
 		    {get, Parsed_list} -> 
-			get:handler(Parsed);
+				get:handler(Parsed);
 		    {post, Parsed_list} ->  
-			post:handler(Parsed);
+				post:handler(Parsed);
 		    {error, Reason} ->
-			error_mod:handler(Reason)
+				{error_eval, Bin} = error_mod:handler(Reason),
+				Bin
 		end,
 	    %% Skriver ut inkommande och utgående trafik i erlang-skalet
 	    %% io:format("Request: ~n~p~n",[Indata]), %% <- Reqesten som skickades in
