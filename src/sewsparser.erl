@@ -45,8 +45,8 @@ parseGET([[]],Parsed_list) ->
 parseGET([],Parsed_list)->
     {get, Parsed_list};
 parseGET([[H|T2]|T], []) ->
-    case H of
-	Path = fm:fixpath(H),
+    Path = fm:fixPath(H),
+    case Path of
         [$/|Rest]-> parseGET(T,[{path,Path}]);
         Any -> {error, badly_formed} 
     end;
