@@ -30,7 +30,9 @@ handlerAUX(HList) ->
 								gen_html:dirDoc(DirList, HList);
 							{error_eval, Bin} ->
 								Bin
-						end
+						end;
+					{error_eval, Bin} ->
+						Bin
 				end;
 			{error, Reason} ->
 				{error_eval, Bin} = error_mod:handler(Reason),
