@@ -1,10 +1,10 @@
 
 %% @doc Sews Parser: Parses the reqests to a format suitable to erlang.  
-%hej
 -module(sewsparser).
 %-export([parse/1]).
 -compile(export_all).
 
+-define(SERVER_ROOT,"/www/var/").
 
 %% For testing purposes only
 string()->
@@ -44,12 +44,10 @@ parseGET([[]],Parsed_list) ->
     {get, Parsed_list};
 parseGET([],Parsed_list)->
     {get, Parsed_list};
-parseGET([[H|T2]|T], []) ->
-    Path = fm:fixPath(H),
-    case Path of
-        [$/|Rest]-> parseGET(T,[{path,Path}]);
-        Any -> {error, badly_formed} 
-    end;
+parseGET([H|T], []) ->
+    {Path,_} = lists:split(length(H)-1,H),
+    parseGET(T,[{path,string:join(fm:fixPath(Path)," ")}]);
+
 parseGET([[H|T2]|T],Parsed_list) ->
 	    case H of
 		"Host:" ->
