@@ -33,29 +33,47 @@ getFileInfo(FileName) ->
 %% @doc	Returns the path to index.html if such a file exists, otherwise returns a sorted list over all files in Directory (eg all directories are placed before all
 %%																																					files)
 
+
+%%			case file:read_file(Dir ++ "index.html") of
+%%				{error, enoent} ->	%% index.html not found
+%%				
+%%				{ok, Bin} ->
+%%					{file, {binary_to_list(Bin), getFileInfo(Dir ++ "index.html")}};
+%%					%%{ok, Dir ++ "index.html"};
+%%				Kuk ->
+%%					Kuk
+%%			end.
+
 dirHandler(Dir) ->
-			case file:read_file(Dir ++ "index.html") of
-				{error, enoent} ->	%% index.html not found
-					{ok, DirList} = file:list_dir(Dir),
-					dirSort = fun(File1, File2) ->
-						File1Dir = filelib:is_dir(Dir ++ File1),
-						File2Dir = filelib:is_dir(Dir ++ File2),
-						File1Low = string:to_lower(File1),
-						File2Low = string:to_lower(File2),
-						if
-							File2Dir, File1Dir, File1Low > File2Low -> false;
-							File2Dir == false, File1Dir == false, File1Low > File2Low -> false;
-							File2Dir, File1Dir == false -> false;
-							true -> true
-						end
-					end,
-					{dirlist, lists:sort(dirSort, DirList)};
-				{ok, Bin} ->
-					{file, {binary_to_list(Bin), getFileInfo(Dir ++ "index.html")}};
-					%%{ok, Dir ++ "index.html"};
-				Kuk ->
-					Kuk
-			end.
+	case filelib:is_file(Dir) of
+		true ->
+			case filelib:is_dir(Dir) of
+				true ->
+					case file:list_dir(Dir) of
+						{ok, DirList} ->
+							DirListStripped = lists:filter(fun ([A | _]) -> A =/= $. end, DirList),	%% strip all ".*" files (eg hidden files)
+							DirSort = fun(File1, File2) ->
+								File1Dir = filelib:is_dir(Dir ++ File1),
+								File2Dir = filelib:is_dir(Dir ++ File2),
+								File1Low = string:to_lower(File1),
+								File2Low = string:to_lower(File2),
+								if
+									File2Dir, File1Dir, File1Low > File2Low -> false;
+									File2Dir == false, File1Dir == false, File1Low > File2Low -> false;
+									File2Dir, File1Dir == false -> false;
+									true -> true
+								end
+							end,
+							{dirlist, lists:sort(DirSort, DirListStripped)};
+						{error, Reason} ->
+							error_mod:handler(Reason)
+					end;
+				false ->
+					{error, eisfile}
+			end;
+		false ->
+			error_mod:handler(enotexist)
+	end.
 
 
 %% @spec (FileName::string()) -> {FileData, FileInfo}
@@ -78,7 +96,8 @@ getFile(FileName) ->
 		{ok, Bin} ->
 			{file, {binary_to_list(Bin), getFileInfo(FileName)}};
 		{error, eisdir} ->
-			dirHandler(FileName);
+			{error, eisdir};
+			%%dirHandler(FileName);
 		ErrorTuple ->	%% {error, Reason}
 			ErrorTuple
 	end.
