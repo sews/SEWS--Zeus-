@@ -1,7 +1,7 @@
 -module(sewsmain).
 -export([start/1,listen/1, handler_test/0]).
 
--define(TCP_OPTIONS, [binary, {packet, 0}, {active, false}, {reuseaddr, true},{ip,{127,0,0,1}}]).
+-define(TCP_OPTIONS, [binary, {packet, 0}, {active, false}, {reuseaddr, true}]).
 
 %% Call sewsmain:start(Port) to start the service.
 %%EXTERNAL FUNCTIONS:
@@ -30,15 +30,16 @@ handler(Socket) ->
 	    Outdata = 
 		case Parsed of
 		    {get, Parsed_list} -> 
-			get:handler(Parsed);
+				get:handler(Parsed);
 		    {post, Parsed_list} ->  
-			post:handler(Parsed);
+				post:handler(Parsed);
 		    {error, Reason} ->
-			error_mod:handler(Reason)
+				{error_eval, Bin} = error_mod:handler(Reason),
+				Bin
 		end,
 	    %% Skriver ut inkommande och utgående trafik i erlang-skalet
-	    io:format("Request: ~n~p~n",[Indata]), %% <- Reqesten som skickades in
-	    io:format("Answer: ~n~p~n",[Outdata]), %% <- Svaret som skickas tillbaka
+	    %% io:format("Request: ~n~p~n",[Indata]), %% <- Reqesten som skickades in
+	    %%io:format("Answer: ~n~p~n",[Outdata]), %% <- Svaret som skickas tillbaka
 	    %% Skickar tillbaka och stänger socketen
 	    gen_tcp:send(Socket, Outdata),
 	    gen_tcp:close(Socket);

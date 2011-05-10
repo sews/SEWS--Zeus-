@@ -1,6 +1,6 @@
 
 -module(fm).
--export([getFile/1, getContents/1, getInfo/2, dirHandler/1, getInfoAll/1,filesAndDirs/2, fixPath/1]).
+-export([getFile/1, getContents/1, getInfo/2, dirHandler/1, getInfoAll/1, fixPath/1]).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -33,21 +33,47 @@ getFileInfo(FileName) ->
 %% @doc	Returns the path to index.html if such a file exists, otherwise returns a sorted list over all files in Directory (eg all directories are placed before all
 %%																																					files)
 
-
-%%			case file:read_file(Dir ++ "index.html") of
-%%				{error, enoent} ->	%% index.html not found
-%%				
-%%				{ok, Bin} ->
-%%					{file, {binary_to_list(Bin), getFileInfo(Dir ++ "index.html")}};
-%%					%%{ok, Dir ++ "index.html"};
-%%				Kuk ->
-%%					Kuk
-%%			end.
-
 dirHandler(Dir) ->
+<<<<<<< HEAD
     case filelib:is_file(Dir) of
 	true ->
 	    case filelib:is_dir(Dir) of
+=======
+	case filelib:is_file(Dir) of
+		true ->
+			case filelib:is_dir(Dir) of
+				true ->
+					case file:list_dir(Dir) of
+						{ok, DirList} ->
+							DirListStripped = lists:filter(fun ([A | _]) -> A =/= $. end, DirList),	%% strip all ".*" files (eg hidden files)
+							DirSort = fun(File1, File2) ->
+								File1Dir = filelib:is_dir(Dir ++ File1),
+								File2Dir = filelib:is_dir(Dir ++ File2),
+								File1Low = string:to_lower(File1),
+								File2Low = string:to_lower(File2),
+								if
+									File2Dir, File1Dir, File1Low > File2Low -> false;
+									File2Dir == false, File1Dir == false, File1Low > File2Low -> false;
+									File2Dir, File1Dir == false -> false;
+									true -> true
+								end
+							end,
+							{ok, lists:sort(DirSort, DirListStripped)};
+						{error, Reason} ->	%% enoent, eaccess
+							error_mod:handler(Reason)
+					end;
+				false ->	%% not gonna happen
+					{error, eisfile}
+			end;
+		false ->
+			%% file not found
+			{error, enoent}
+			%%error_mod:handler(enoent)
+	end.
+	
+fixPath (Path) ->
+	case filelib:is_dir(Path) of
+>>>>>>> 2972afcd0c6848cc05fb6eaa32640962f5f34464
 		true ->
 		    case file:list_dir(Dir) of
 			{ok, DirList} ->
@@ -110,6 +136,7 @@ fixPath(Path) ->
 %%  {charset,<string>}.
 
 getFile(FileName) -> 
+<<<<<<< HEAD
     case file:read_file(FileName) of
 	{ok, Bin} ->
 	    {ok, {binary_to_list(Bin), getFileInfo(FileName)}};
@@ -119,6 +146,18 @@ getFile(FileName) ->
 	{error, Reason} ->	%% {error, Reason}
 	    error_mod:handler(Reason)
     end.
+=======
+	case file:read_file(FileName) of
+		{ok, Bin} ->
+			{ok, {binary_to_list(Bin), getFileInfo(FileName)}};
+		{error, eisdir} ->
+			{error, eisdir};
+		{error, enoent} ->
+			{error, enoent};
+		{error, Reason} ->
+			error_mod:handler(Reason)
+	end.
+>>>>>>> 2972afcd0c6848cc05fb6eaa32640962f5f34464
 
 
 %% 	 	getContents (FileHandle)
@@ -133,23 +172,6 @@ getContents({FileList, _}) -> FileList.
 %% @spec (Filehandle()::{FileData, FileInfo}) -> List
 
 getInfoAll({_, InfoList}) -> InfoList.
-
-
-
-%%Pre: A list of filenames and a path to were they are located
-%%Post: A list of tuples consisting the tuples were the first element is either the atom isdir if the file
-%%      is a directory or isfile if the file is a file and the second element is the filename
-%%Ex: filesAndDirs(["text.txt","Documents"],"/home/usr/") => [{isdir,"Documents"},{isfile,"text.txt"}]
-%%S-E: None(I think...)
-filesAndDirs([],_) -> [];
-filesAndDirs([File|FileTail],Path)->
-    IsDir = filelib:is_dir(Path ++ File),
-    if
-	IsDir ->
-	    [{isdir,File}|filesAndDirs(FileTail,Path)];
-	true -> 
-	    [{isfile, File}|filesAndDirs(FileTail,Path)]
-    end.
 
 
 %% 	 	getInfo (FileHandle, Info)
@@ -193,4 +215,24 @@ getInfoAll_test() ->
     ?_assertMatch([{contenttype, "text/html"}], getInfoAll({[], [{contenttype, "text/html"}]})).
 
 getContents_test() ->
+<<<<<<< HEAD
     ?_assertMatch("hej jag ar en strang ur en fil", getContents({"hej jag ar en strang ur en fil", []})).
+=======
+	?_assertMatch("hej jag ar en strang ur en fil", getContents({"hej jag ar en strang ur en fil", []})).
+	
+fixPath_test() ->
+	?_assertMatch("/home/", fixPath("home")),
+	?_assertMatch("/home/", fixPath("/home/")),
+	?_assertMatch("/home/", fixPath("/home")).
+
+
+
+
+
+
+ 
+	
+	
+	
+	
+>>>>>>> 2972afcd0c6848cc05fb6eaa32640962f5f34464
