@@ -3,13 +3,22 @@
 SRC = src/
 
 # Doc folder
-DOC = doc/
+DOCDIR = doc/
 
 # Default compiler and compiling options
 CC = erlc -W
 
+# Erlang
+ERL = erl
+
 # Default testing options
-TESTOP = erl -noshell -s
+TESTOP = $(ERL) -noshell -s
+
+# All files
+# Deprecated
+SRCFILES = $(SRC)sewsmain.erl $(SRC)sewsparser.erl $(SRC)fm.erl $(SRC)get.erl $(SRC)gen_html.erl $(SRC)error_mod.erl
+
+.PHONY: build test clean rebuild doc docs
 
 # Runs when make is called without parameters
 all: build
@@ -18,9 +27,9 @@ all: build
 # Borde endast kompilera de som är
 # äldre än respektive .beam fil då :*.erl.
 
-#TODO => Compile all .erl files older than respective .beam file
-build: $(SRC)*.erl
-	$(CC) $?
+# TODO => Compile all .erl files older than respective .beam file
+build:
+	$(ERL) -make
 
 # Compile one specific .erl
 %.erl: 
@@ -36,10 +45,10 @@ test: build
 	$(TESTOP) sewsmain start 8888
 
 # Remove all .beam files discarding errors
-.PHONY: clean
 clean:
 	rm -f $(SRC)*.beam
 	rm -f *.beam
+	rm -f ebin/*.beam
 
 # Removes all .beam files and compiles new
 rebuild: 
@@ -47,5 +56,10 @@ rebuild:
 
 # Gör denna, Edoc ska genereras automatiskt
 # Generates Edoc
-#doc: 
-#	edoc:files([])
+doc: $(SRCFILES)
+	make $(DOCDIR)*.html
+
+# Generates a single Edoc
+docs: .erl
+	erl -noshell -run edoc_run application "'$@.erl'"\
+	'"."' '[{def,{vsn,"$(VSN)"}}]'
