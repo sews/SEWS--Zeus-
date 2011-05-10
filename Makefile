@@ -60,6 +60,7 @@ doc: $(SRCFILES)
 	make $(DOCDIR)*.html
 
 # Generates a single Edoc
-docs: .erl
-	erl -noshell -run edoc_run application "'$@.erl'"\
-	'"."' '[{def,{vsn,"$(VSN)"}}]'
+# For appfiles
+# docs: .erl
+#	erl -noshell -run edoc_run application "'$@.erl'"\
+#	'"."' '[{def,{vsn,"$(VSN)"}}]'
