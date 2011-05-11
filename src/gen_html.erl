@@ -8,7 +8,7 @@
 
 %% Todo: Optimize
 dirDocAux(DirList, Path, Host, [])->
-    dirDocAux(DirList, Path, Host, "<html><head><title>" ++ Path ++ "</title></head><body>");
+    dirDocAux(DirList, Path, Host, "<html><head><title>Index of " ++ Path ++ "</title></head><body><h1>Index of " ++ Path ++ "</h1><hr>");
 dirDocAux([File|FileTail], Path, Host, Html) ->
     IsDir = filelib:is_dir(Path ++ File),
     case IsDir of
@@ -18,7 +18,7 @@ dirDocAux([File|FileTail], Path, Host, Html) ->
 	    dirDocAux(FileTail, Path, Host, Html ++ "[File] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />")
     end;
 dirDocAux([], _, _, Html) ->
-    Html ++ "</body></html>".
+    Html ++ "<hr></body></html>".
     
 
 %% EXPORTED FUNCTIONS
