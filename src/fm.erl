@@ -4,6 +4,17 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
+
+%%	DATATYPES
+%%
+%%  A filehandle() has the form of {File, Info}. File is a string containing the entire file.
+%%  Info contains any additional info about the file. This can be:
+%% 
+%%  {contenttype, <string>} example: "image/jpeg"
+%%  {charset,<string>}.
+
+
+
 %% 			INTERNAL FUNCTIONS
 
 getContentType(FileName) ->
@@ -28,15 +39,15 @@ getFileInfo(FileName) ->
 	
 %%			EXPORTED FUNCTIONS
 
-%%		listDir(Directory)
+%%		dirHandler(Directory)
 %% @spec (Directory::string()) -> ok
-%% @doc	Returns the path to index.html if such a file exists, otherwise returns a sorted list over all files in Directory (eg all directories are placed before all
-%%																																					files)
+%% @doc	Returns returns a sorted list over all files in Directory (with all directories placed before all files).
+%%		If Directory does not exist, {error, enoent} is returned. If Directory is a file {error, eisfile} is returned.
 
 dirHandler(Dir) ->
-	case filelib:is_file(Dir) of
+	case filelib:is_file(Dir) of	%% if Dir exists
 		true ->
-			case filelib:is_dir(Dir) of
+			case filelib:is_dir(Dir) of	%% if Dir is a directory
 				true ->
 					case file:list_dir(Dir) of
 						{ok, DirList} ->
@@ -66,6 +77,9 @@ dirHandler(Dir) ->
 			%%error_mod:handler(enoent)
 	end.
 	
+%% @spec (Path::string()) -> ok
+%% @doc	Returns a modified version of Path that both begins and ends with the $/. character. If both $/. are already present, Path is returned unchanged.
+	
 fixPath (Path) ->
 	Path1 = case Path of	%% check for "/" at start of path
 		[$/ | _] ->	Path;
@@ -85,20 +99,15 @@ fixPath (Path) ->
 	end.
 
 
-%% @spec (FileName::string()) -> {FileData, FileInfo}
+%% @spec (FileName::string()) -> {FileData, FileInfo} | {error, eisdir} | {error, enoent} | error_bin()
 %%
-%% @doc Returns 							{file, FileHandle} 				if file found. 
-%%	If FileName is a directory, returns 	{file, FileHandle}			 	if index.html is found. 
-%%	If index.html is not found, returns 	{dirlist, list of all files in directory FileName}
-%%  Otherwise returns 						{error, Reason}
+%% @doc Returns 							{ok, FileHandle} 				if file found. 
+%%	If FileName does not exist, returns		{error, enoent}
+%%	If FileName is a directory, returns 	{error, eisdir} 
+%%	For any other error returns 			{error_eval, Bin}
 %%
-%%  Use FileHandle in all other file functions in this module.
+%%  Use FileHandle in all file information functions in this module.
 %%
-%%  Notes: A filehandle has the form of {File, Info}. File is a string containing the entire file.
-%%  Info contains any additional info about the file. This can be:
-%% 
-%%  {contenttype, <string>} example: "image/jpeg"
-%%  {charset,<string>}.
 
 getFile(FileName) -> 
 	case file:read_file(FileName) of
@@ -114,7 +123,7 @@ getFile(FileName) ->
 
 
 %% 	 	getContents (FileHandle)
-%%  @doc 	Returns a string containing the entire file	
+%%  @doc 	Returns a string containing the entire file
 %% @spec (FileHandle::{FileData, FileInfo}) -> List
 
 getContents({FileList, _}) -> FileList.
@@ -162,18 +171,18 @@ getInfo({_, InfoList}, Info) ->
 %% TEST CASES
 
 getInfo_test() ->
-	?_assertMatch("text/html", getInfo({[], [{contenttype, "text/html"}]}, contenttype)).
+	?assertEqual("text/html", getInfo({[], [{contenttype, "text/html"}]}, contenttype)).
 	
 getInfoAll_test() ->
-	?_assertMatch([{contenttype, "text/html"}], getInfoAll({[], [{contenttype, "text/html"}]})).
+	?assertMatch([{contenttype, "text/html"}], getInfoAll({[], [{contenttype, "text/html"}]})).
 	
 getContents_test() ->
-	?_assertMatch("hej jag ar en strang ur en fil", getContents({"hej jag ar en strang ur en fil", []})).
+	?assertEqual("hej jag ar en strang ur en fil", getContents({"hej jag ar en strang ur en fil", []})).
 	
 fixPath_test() ->
-	?_assertMatch("/home/", fixPath("home")),
-	?_assertMatch("/home/", fixPath("/home/")),
-	?_assertMatch("/home/", fixPath("/home")).
+	[?assertEqual("/home/", fixPath("home")),
+	?assertEqual("/home/", fixPath("/home/")),
+	?assertEqual("/home/", fixPath("/home"))].
 
 
 

@@ -34,12 +34,9 @@ parse(Input)->
 
 %%%%%%%%%%%%%% INTERNAL FUNCTIONS %%%%%%%%%%%%%%
 
-%% @doc Parse out the keywords and the relevant data from the keywords
-%% @spec parseGET(String::list,Tuple::list) -> Tuple::list
-%% Pre: A correctly formated GET request starting with the path
-%% Post: A tupple of the format {get, Tuple_list} or {error, Reason}, where Tuple_list consists of tuples of the format {header_atom(), Data}
-%% S-E None
-%% TODO: Implementera för fler headers 
+
+%% @doc Returns a modified version of String with every occurence of "%20" substrings replaced with blankspaces
+%% @spec stripShit(String::list) -> String::list
 
 stripShit ([]) -> [];
 stripShit ([H1]) -> [H1];
@@ -51,6 +48,14 @@ stripShit ([H1,H2,H3 | Rest]) ->
 		 _ ->
 			[H1 | stripShit([H2,H3 | Rest])]
 	end.
+	
+
+%% @doc Parse out the keywords and the relevant data from the keywords
+%% @spec parseGET(String::list,Tuple::list) -> Tuple::list
+%% Pre: A correctly formated GET request starting with the path
+%% Post: A tupple of the format {get, Tuple_list} or {error, Reason}, where Tuple_list consists of tuples of the format {header_atom(), Data}
+%% S-E None
+%% TODO: Implementera för fler headers 
 
 parseGET([[]],Parsed_list) ->
     {get, Parsed_list};
