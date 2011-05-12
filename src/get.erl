@@ -1,17 +1,17 @@
 %% @version 0.1
-%% @doc handling GET requests
+%% @doc A module made for handling GET requests
 
 -module(get).
 -export([handler/1]).
 
 -include_lib("eunit/include/eunit.hrl").
 
-%% @doc Handler
+%% @spec ({atom(), Tuple_list}) -> Tuple_list
+%% @doc Takes a get-tuple with TupleList of GET headers, returns a TupleList with HTTP headers and a body.
+%% @todo Implementera for more headers
+
 handler({get, Tuple_list}) -> handlerAUX(Tuple_list);
 handler({_,_}) -> {error, notCorrectlyTagged}.
-
-%% @doc Takes an get-tuple with TupleList of GET headers, returns a TupleList with HTTP headers and a body.
-%% @todo Implementera for more headers
 
 handlerAUX(HList) -> 
     case lists:keysearch(path, 1, HList) of
@@ -45,8 +45,6 @@ handlerAUX(HList) ->
 	Any -> io:format("~n~p~n", [Any])
     end.
     
-%%handler_test() ->	%% wut??????
-%%	?_assert({ok, Reason} =:= handler({get, [{path, "/home/dennisrosen/little alex on horse"}]})).
 
 
 
