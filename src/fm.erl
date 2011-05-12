@@ -14,8 +14,11 @@
 %%  {charset,<string>}.
 
 
-
 %% 			INTERNAL FUNCTIONS
+
+%%		dirContentType(FileName)
+%% @spec (FileName::string()) -> String
+%% @doc	Returns a string containing html content-type for the supplied filename
 
 getContentType(FileName) ->
 	case string:sub_word(FileName, 2, $.) of
@@ -29,8 +32,18 @@ getContentType(FileName) ->
 			"text/plain"
 	end.
 	
+	
+%%		dirCharSet(FileName)
+%% @spec (FileName::string()) -> String
+%% @doc	Returns a string containing html char-set for the supplied filename
+	
 getCharset (FileName) ->
 	"UTF-8".
+	
+	
+%%		getFileInfo(FileName)
+%% @spec (FileName::string()) -> {InfoType, InfoValue}
+%% @doc	Returns a 2-tuple list containing info key-value pairs for the supplied filename
 
 getFileInfo(FileName) ->
 	[	{contenttype, getContentType(FileName)},
@@ -40,8 +53,8 @@ getFileInfo(FileName) ->
 %%			EXPORTED FUNCTIONS
 
 %%		dirHandler(Directory)
-%% @spec (Directory::string()) -> ok
-%% @doc	Returns returns a sorted list over all files in Directory (with all directories placed before all files).
+%% @spec (Directory::string()) -> {ok, DirList} | {error, Reason} | {error_eval, Bin}
+%% @doc	Returns a sorted list over all files in Directory (with all directories placed before all files).
 %%		If Directory does not exist, {error, enoent} is returned. If Directory is a file {error, eisfile} is returned.
 
 dirHandler(Dir) ->
@@ -74,10 +87,9 @@ dirHandler(Dir) ->
 		false ->
 			%% file not found
 			{error, enoent}
-			%%error_mod:handler(enoent)
 	end.
 	
-%% @spec (Path::string()) -> ok
+%% @spec (Path::string()) -> FixedPath
 %% @doc	Returns a modified version of Path that both begins and ends with the $/. character. If both $/. are already present, Path is returned unchanged.
 	
 fixPath (Path) ->
@@ -99,9 +111,9 @@ fixPath (Path) ->
 	end.
 
 
-%% @spec (FileName::string()) -> {FileData, FileInfo} | {error, eisdir} | {error, enoent} | error_bin()
+%% @spec (FileName::string()) -> {FileData, FileInfo} | {error, eisdir} | {error, enoent} | {error_eval, Bin}
 %%
-%% @doc Returns 							{ok, FileHandle} 				if file found. 
+%% @doc Returns 							{ok, FileHandle}	if file found. 
 %%	If FileName does not exist, returns		{error, enoent}
 %%	If FileName is a directory, returns 	{error, eisdir} 
 %%	For any other error returns 			{error_eval, Bin}
@@ -123,23 +135,23 @@ getFile(FileName) ->
 
 
 %% 	 	getContents (FileHandle)
-%%  @doc 	Returns a string containing the entire file
+%% @doc 	Returns a string containing the entire file
 %% @spec (FileHandle::{FileData, FileInfo}) -> List
 
 getContents({FileList, _}) -> FileList.
 
 
 %% 		getInfoAll (FileHandle)
-%%	@doc 	Returns a list containing all {Infokey, Infovalue} pairs from FileHandle
-%% @spec (Filehandle()::{FileData, FileInfo}) -> List
+%% @doc 	Returns a list containing all {Infokey, Infovalue} pairs from FileHandle
+%% @spec (Filehandle::{FileData, FileInfo}) -> List
 
 getInfoAll({_, InfoList}) -> InfoList.
 
 
 %% 	 	getInfo (FileHandle, Info)
-%% 	@doc	Returns the corresponding file info in filehandle FileHandle to the atom Info, or false if it is not found.
+%% @doc	Returns the corresponding file info in filehandle FileHandle to the atom Info, or false if it is not found.
 %%			Example:	getInfo("hej.txt", contenttype)
-%% @spec (Filehandle()::{FileData, FileInfo}, List -> List
+%% @spec (Filehandle::{FileData, FileInfo}, List) -> List
 	
 getInfo({_, InfoList}, Info) ->
 	case lists:keysearch(Info, 1, InfoList) of
@@ -190,7 +202,4 @@ fixPath_test() ->
 
 
  
-	
-	
-	
-	
+

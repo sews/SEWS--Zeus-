@@ -1,5 +1,5 @@
-
-%% @doc Sews Parser: Parses the reqests to a format suitable to erlang.  
+%% @version 0.1
+%% @doc Sews Parser: Parses the requests to a format suitable to erlang.  
 -module(sewsparser).
 %-export([parse/1]).
 -compile(export_all).
@@ -13,8 +13,8 @@ string()->
 
 
 %%%%%%%%%%%%%% EXPORTED FUNCTIONS %%%%%%%%%%%%%%
-%% @hidden@doc Parser for the html requests.
-%% @hidden@spec parse(Input::String) -> Tuple_list
+%% @spec parse(Input::String) -> Tuple_list
+%% @doc Parser for the html requests.
 %%  Pre: A POST or GET request in the standard format
 %%  Post: A tuple {type_atom(), Tuple_list} where Tuple_list consists of tuples of the format {header_atom(), Data} or a tuple {error, Reason}
 %% possible tuples: {path, Path}, {host, Host}, {connection, Connection}
@@ -50,12 +50,12 @@ stripShit ([H1,H2,H3 | Rest]) ->
 	end.
 	
 
-%% @doc Parse out the keywords and the relevant data from the keywords
 %% @spec parseGET(String::list,Tuple::list) -> Tuple::list
+%% @todo Implementera för fler headers 
+%% @doc Parse out the keywords and the relevant data from the keywords
 %% Pre: A correctly formated GET request starting with the path
 %% Post: A tupple of the format {get, Tuple_list} or {error, Reason}, where Tuple_list consists of tuples of the format {header_atom(), Data}
 %% S-E None
-%% TODO: Implementera för fler headers 
 
 parseGET([[]],Parsed_list) ->
     {get, Parsed_list};
@@ -92,6 +92,6 @@ parseGET([[H|T2]|T],Parsed_list) ->
 %% Post: A tupple of the format {post, Tuple_list} or {error, Reason}, where Tuple_list consists of tuples of the format {header_atom(), Data}
 %% S-E None	    
 
-%% TODO: Implement parsePOST
+%% @todo Implement parsePOST
 parsePOST([H|T],[])->
     todo.

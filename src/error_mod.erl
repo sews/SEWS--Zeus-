@@ -9,5 +9,5 @@ handler(Reason) ->
 		eaccess ->
 			"1337 - Access denied suckers";
 		_ ->
-			"1000 - Random error found"
+			"1000 - " ++ atom_to_list(Reason) ++ " error found"
 	end ++ "</body></html>")}.
