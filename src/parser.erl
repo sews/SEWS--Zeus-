@@ -16,7 +16,7 @@
 
 %% For testing purposes only
 string()->
-    "GET /home/dennisrosen/big alex on horse.txt HTTP/1.1\r\nHost: 127.0.0.1:8888\r\nUser-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:2.0.1) Gecko/20100101 Firefox/4.0.1\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\nAccept-Language: en-us,en;q=0.5\r\nAccept-Encoding: gzip, deflate\r\nAccept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r\nKeep-Alive: 115\r\nConnection: keep-alive\r\n\r\n".
+    "GET /home/dennisrosen/big%20alex%20on%20horse.txt HTTP/1.1\r\nHost: 127.0.0.1:8888\r\nUser-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:2.0.1) Gecko/20100101 Firefox/4.0.1\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\nAccept-Language: en-us,en;q=0.5\r\nAccept-Encoding: gzip, deflate\r\nAccept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r\nKeep-Alive: 115\r\nConnection: keep-alive\r\n\r\n".
 
 
 
@@ -70,8 +70,8 @@ parseGET([[]],ParsedList) ->
 parseGET([],ParsedList)->
     {get, ParsedList};
 parseGET([H|MainTail], []) ->
-    {Path,_} = lists:split(length(H)-1,H),
-    PathFixed = replaceHtmlSpace(string:join(Path, " ")),
+    [Path|Rest] = H,
+    PathFixed = replaceHtmlSpace(Path),
     parseGET(MainTail,[{path,?SERVER_ROOT ++ fm:fixPath(PathFixed)}]);
 parseGET([[H|InnerTail]|MainTail],ParsedList) ->
 	    case H of
@@ -107,4 +107,4 @@ parsePOST([H|T],[])->
 %% TEST CASES
 
 parse_test() ->
-    ?assertEqual([{path,?SERVER_ROOT ++ "/pics/horse.jpeg"}],parse("GET /pics/horse.jpeg")).
+    ?assertEqual({get,[{path,?SERVER_ROOT ++ "/pics/horse.jpeg"}]},parse("GET /pics/horse.jpeg")).
