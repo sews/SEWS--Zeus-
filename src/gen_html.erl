@@ -6,7 +6,7 @@
 
 %% INTERNAL FUNCTIONS
 
-%% Todo: Optimize
+%% @todo: Optimize
 dirDocAux(DirList, Path, Host, [])->
     dirDocAux(DirList, Path, Host, "<html><head><title>Index of " ++ Path ++ "</title></head><body><h1>Index of " ++ Path ++ "</h1><hr>");
 dirDocAux([File|FileTail], Path, Host, Html) ->
