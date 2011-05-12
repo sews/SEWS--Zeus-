@@ -57,6 +57,7 @@ getFileInfo(FileName) ->
 %% @doc	Returns a sorted list over all files in Directory (with all directories placed before all files).
 %%		If Directory does not exist, {error, enoent} is returned. If Directory is a file {error, eisfile} is returned.
 
+
 dirHandler(Dir) ->
 	case filelib:is_file(Dir) of	%% if Dir exists
 		true ->
@@ -71,9 +72,9 @@ dirHandler(Dir) ->
 								File1Low = string:to_lower(File1),
 								File2Low = string:to_lower(File2),
 								if
-									File2Dir, File1Dir, File1Low > File2Low -> false;
-									File2Dir == false, File1Dir == false, File1Low > File2Low -> false;
-									File2Dir, File1Dir == false -> false;
+									File1Dir == false, File2Dir 			-> false;
+									File1Dir == false, File1Low > File2Low 	-> false;
+									File2Dir, File1Low > File2Low 			-> false;
 									true -> true
 								end
 							end,
