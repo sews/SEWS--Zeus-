@@ -10,8 +10,8 @@
 %%Post: A pid to the listening process
 %%S-E: Starts up the Sews server, listening on the given port 
 start(Port)->
+    
     spawn(sewsmain,listen,[Port]). 
-
 
 %%INTERNAL FUNCTIONS:
 listen(Port) ->
@@ -46,7 +46,6 @@ handler(Socket) ->
         {error, closed} ->
             ok %% TODO: Fixa errorhantering här
     end.
-
 
 string()->
     "GET /home/dennisrosen/AAAAA HTTP/1.1\r\nHost: 127.0.0.1:8888\r\nUser-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:2.0.1) Gecko/20100101 Firefox/4.0.1\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\nAccept-Language: en-us,en;q=0.5\r\nAccept-Encoding: gzip, deflate\r\nAccept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r\nKeep-Alive: 115\r\nConnection: keep-alive\r\n\r\n".
