@@ -75,3 +75,6 @@ test: build
 	erl -noshell -pa ebin \
 	-eval 'eunit:test("ebin",[verbose])' \
 	-s init stop
+
+$(EBIN)%.beam : src/%.erl Makefile
+	$(CC) -o $(EBIN) $<

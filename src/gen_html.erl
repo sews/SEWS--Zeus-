@@ -57,6 +57,6 @@ dirDoc(DirList, HList)->
 %% TEST CASES
 
 dirDoc_test() ->
-	?assertEqual("<html><head><title>hej</title></head><body></body></html>", dirDoc([], [{path, "hej"},{host, ""}])).
+	?assertEqual("<html><head><title>Index of hej</title></head><body><h1>Index of hej</h1><hr><hr></body></html>", dirDoc([], [{path, "hej"},{host, ""}])).
 
 
