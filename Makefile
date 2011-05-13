@@ -18,7 +18,7 @@ TESTOP = $(ERL) -noshell -s
 # Deprecated
 SRCFILES = $(SRC)sewsmain.erl $(SRC)sewsparser.erl $(SRC)fm.erl $(SRC)get.erl $(SRC)gen_html.erl $(SRC)error_mod.erl
 
-.PHONY: build test clean rebuild doc docs
+.PHONY: run build test clean rebuild doc docs
 
 # Runs when make is called without parameters
 all: build
@@ -41,7 +41,7 @@ build:
 
 # Behöver utökas?
 # Test
-test: build
+run: build
 	$(TESTOP) sewsmain start 8888
 
 # Remove all .beam files discarding errors
@@ -64,3 +64,8 @@ doc: $(SRCFILES)
 # docs: .erl
 #	erl -noshell -run edoc_run application "'$@.erl'"\
 #	'"."' '[{def,{vsn,"$(VSN)"}}]'
+
+test: build
+	erl -noshell -pa ebin \
+	-eval 'eunit:test("ebin",[verbose])' \
+	-s init stop
