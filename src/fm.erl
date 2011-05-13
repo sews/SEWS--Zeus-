@@ -122,14 +122,15 @@ fixPath (Path) ->
 %%  Use FileHandle in all file information functions in this module.
 %%
 
-getFile(Path,Tab) -> 
+getFile(Path) -> 
     IsDir = filelib:is_dir(Path),
     IsFile = filelib:is_file(Path),
     if
 	IsDir -> 
 	    {error, eisdir};
 	IsFile -> 
-	    cache:read(Tab,Path);
+	    {ok,Bin} = cache:read(Path),
+	    {ok,binary_to_list(Bin),getFileInfo(Path)};
 	true -> 
 	    {error, enoent}
     end.

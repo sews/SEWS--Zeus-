@@ -12,13 +12,13 @@
 %% @version 0.1
 %% @doc The Sews Parser: Parses the requests to a format suitable to erlang.  
 
--define(SERVER_ROOT,"/var/www").
 
 %% For testing purposes only
 string()->
     "GET /home/dennisrosen/big%20alex%20on%20horse.txt HTTP/1.1\r\nHost: 127.0.0.1:8888\r\nUser-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:2.0.1) Gecko/20100101 Firefox/4.0.1\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\nAccept-Language: en-us,en;q=0.5\r\nAccept-Encoding: gzip, deflate\r\nAccept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r\nKeep-Alive: 115\r\nConnection: keep-alive\r\n\r\n".
 
-
+string2()->
+    "GET /home/johe7425 HTTP/1.1\r\nHost: localhost:8888\r\nUser-Agent: Mozilla/5.0 (X11; U; SunOS i86pc; en-US; rv:1.8.1.20) Gecko/20090122 Firefox/2.0.0.20\r\nAccept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5\r\nAccept-Language: en-us,en;q=0.5\r\nAccept-Encoding: gzip,deflate\r\nAccept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r\nKeep-Alive: 300\r\nConnection: keep-alive\r\nReferer: http://localhost:8888/home\r\n\r\n".
 
 %%%%%%%%%%%%%% EXPORTED FUNCTIONS %%%%%%%%%%%%%%
 %% @spec parse(Input::String) -> Tuple_list
@@ -72,7 +72,7 @@ parseGET([],ParsedList)->
 parseGET([H|MainTail], []) ->
     [Path|Rest] = H,
     PathFixed = replaceHtmlSpace(Path),
-    parseGET(MainTail,[{path,?SERVER_ROOT ++ fm:fixPath(PathFixed)}]);
+    parseGET(MainTail,[{path,fm:fixPath(PathFixed)}]);
 parseGET([[H|InnerTail]|MainTail],ParsedList) ->
 	    case H of
 		"Host:" ->
@@ -107,4 +107,4 @@ parsePOST([H|T],[])->
 %% TEST CASES
 
 parse_test() ->
-    ?assertEqual({get,[{path,?SERVER_ROOT ++ "/pics/horse.jpeg"}]},parse("GET /pics/horse.jpeg")).
+    ?assertEqual({get,[{path,"/pics/horse.jpeg"}]},parse("GET /pics/horse.jpeg")).

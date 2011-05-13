@@ -3,7 +3,7 @@
 %% @since 12.05.11
 
 -module(gen_html).
--compile([dirDoc/2]).
+-export([dirDoc/2]).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -51,7 +51,7 @@ dirDoc(DirList, HList)->
 	       	false ->
 		   	error_mod:handler(nopath)
 	   	end,
-    dirDocAux(DirList, Path, Host,[]).
+    dirDocAux(DirList, Path, []).
     
     
 %% TEST CASES

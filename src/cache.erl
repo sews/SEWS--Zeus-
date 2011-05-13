@@ -1,12 +1,12 @@
 -module(cache).
 -compile(export_all).
 
--define(ETS_OPTIONS,[set]).
+-define(ETS_OPTIONS,[set,named_table,public]).
 
 start()->
-    ets:new(name,?ETS_OPTIONS).
+    ets:new(etstab,?ETS_OPTIONS).
 
-read(Tab,Path) ->
+read(Path) ->
     IsDir = filelib:is_dir(Path),
     IsFile = filelib:is_file(Path),
     if
@@ -18,23 +18,23 @@ read(Tab,Path) ->
 		    {error, Reason};
 		{ok, FileInfo} ->
 		    Date = element(6,FileInfo),
-		    case ets:member(Tab,Path) of
+		    case ets:member(etstab,Path) of
 			true ->
-			    EtsDate = ets:lookup_element(Tab,Path,2),
+			    EtsDate = ets:lookup_element(etstab,Path,2),
 			    if
 				EtsDate == Date ->
-				  %  io:format("Up to date"),
-				    ets:lookup_element(Tab,Path,3);
+				    io:format("Up to date"),
+				    ets:lookup_element(etstab,Path,3);
 				true ->
 				    {ok, Bin} = file:read_file(Path),
-				    ets:insert(Tab,{Path,Date,Bin}),
-				   % io:format("DATE EXPIRED"),			     
+				    ets:insert(etstab,{Path,Date,Bin}),
+				    io:format("DATE EXPIRED"),			     
 				    Bin
 			    end;
 			_ ->
 			    {ok, Bin} = file:read_file(Path),
-			    ets:insert(Tab,{Path,Date,Bin}),
-			   % io:format("Not in"),
+			    ets:insert(etstab,{Path,Date,Bin}),
+			    io:format("Not in"),
 			    Bin
 		    end
 	    end;
