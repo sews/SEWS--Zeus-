@@ -27,7 +27,7 @@ BEAMFILES = $(EBIN)$(SRCFILES: .erl = .beam)
 .PHONY: run build test clean rebuild doc docs
 
 # Runs when make is called without parameters
-all: build
+all: build test
 
 # Kompilerar alla filer, oavsett �lder..
 # Borde endast kompilera de som �r
