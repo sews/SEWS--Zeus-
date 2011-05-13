@@ -17,11 +17,11 @@
 string()->
     "GET /home/dennisrosen/big%20alex%20on%20horse.txt HTTP/1.1\r\nHost: 127.0.0.1:8888\r\nUser-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:2.0.1) Gecko/20100101 Firefox/4.0.1\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\nAccept-Language: en-us,en;q=0.5\r\nAccept-Encoding: gzip, deflate\r\nAccept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r\nKeep-Alive: 115\r\nConnection: keep-alive\r\n\r\n".
     
-stringPOST()->
-    "POST /home/dennisrosen/POP HTTP/1.1\r\nHost: localhost:8888\r\nUser-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:2.0.1) Gecko/20100101 Firefox/4.0.1\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\nAccept-Language: en-us,en;q=0.5\r\nAccept-Encoding: gzip, deflate\r\nAccept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r\nKeep-Alive: 115\r\nConnection: keep-alive\r\nReferer: http://localhost:8877/home/dennisrosen/POP\r\nContent-Type: multipart/form-data; boundary=---------------------------84239866522249001744292470\r\nContent-Length: 230\r\n\r\n-----------------------------84239866522249001744292470\r\nContent-Disposition: form-data; name=\"fileselect\"; filename=\"text.txt\"\r\nContent-Type: text/plain\r\n\r\nhej hej\nlol\n\r\n\r-----------------------------84239866522249001744292470--\r\n".
-
 string2()->
     "GET /home/johe7425 HTTP/1.1\r\nHost: localhost:8888\r\nUser-Agent: Mozilla/5.0 (X11; U; SunOS i86pc; en-US; rv:1.8.1.20) Gecko/20090122 Firefox/2.0.0.20\r\nAccept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5\r\nAccept-Language: en-us,en;q=0.5\r\nAccept-Encoding: gzip,deflate\r\nAccept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r\nKeep-Alive: 300\r\nConnection: keep-alive\r\nReferer: http://localhost:8888/home\r\n\r\n".
+    
+stringPOST()->
+    "POST /home/dennisrosen/POP HTTP/1.1\r\nHost: localhost:8888\r\nUser-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:2.0.1) Gecko/20100101 Firefox/4.0.1\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\nAccept-Language: en-us,en;q=0.5\r\nAccept-Encoding: gzip, deflate\r\nAccept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r\nKeep-Alive: 115\r\nConnection: keep-alive\r\nReferer: http://localhost:8877/home/dennisrosen/POP\r\nContent-Type: multipart/form-data; boundary=---------------------------84239866522249001744292470\r\nContent-Length: 230\r\n\r\n-----------------------------84239866522249001744292470\r\nContent-Disposition: form-data; name=\"fileselect\"; filename=\"text.txt\"\r\nContent-Type: text/plain\r\n\r\nhej hej\nlol\n\r\n\r-----------------------------84239866522249001744292470--\r\n".
 
 %%%%%%%%%%%%%% EXPORTED FUNCTIONS %%%%%%%%%%%%%%
 	
@@ -35,13 +35,15 @@ string2()->
 %% Ex: parser:parse("GET /"). -> {get,[{path,"/index.html"}]}
     
 parse(Input)->
-    L = token(Input, $\n, [], []),
+    %%L = token(Input, $\n, [], []),
     Request = string:sub_word(Input, 1),
     case Request of
-        "GET" -> 	[HeadList|MainTail] = lists:map(fun(X) -> string:tokens(X," \r\0") end, L),
+        "GET" -> 	L = string:tokens(Input, "\n"),
+        			[HeadList|MainTail] = lists:map(fun(X) -> string:tokens(X," \r\0") end, L),
         			[_|Tail] = HeadList,
         			parseGET([Tail | MainTail], []);
-        "POST" -> 	parsePOST(L, []);
+        "POST" -> 	L = token(Input, $\n, [], []),
+        			parsePOST(L, []);
         _ -> error_mod:handler(faulty_request)
     end.
 
@@ -139,8 +141,6 @@ parsePOSTAux([H | Rest], ParsedList) ->
 		"\r" ->
 			[{file, string:join(parseFile(Rest), "\n")} | ParsedList]
 	end.
-	
-joppe () -> hej.
 
 pOSTProcessing([]) -> [];
 pOSTProcessing([{Atom, Value} | Rest]) ->
