@@ -129,8 +129,8 @@ getFile(Path) ->
 	IsDir -> 
 	    {error, eisdir};
 	IsFile -> 
-	    {ok,Bin} = cache:read(Path),
-	    {ok,binary_to_list(Bin),getFileInfo(Path)};
+	    Bin = cache:read(Path),
+	    {ok,{binary_to_list(Bin),getFileInfo(Path)}};
 	true -> 
 	    {error, enoent}
     end.
