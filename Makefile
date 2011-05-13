@@ -24,7 +24,7 @@ EBIN = ebin/
 # All .beam files
 BEAMFILES = $(EBIN)$(SRCFILES: .erl = .beam)
 
-.PHONY: build test clean rebuild doc docs
+.PHONY: run build test clean rebuild doc docs
 
 # Runs when make is called without parameters
 all: build
@@ -47,7 +47,7 @@ build:
 
 # Beh�ver ut�kas?
 # Test
-test: build
+run: build
 	$(TESTOP) sewsmain start 8888
 
 # Remove all .beam files discarding errors
@@ -70,3 +70,8 @@ doc: $(SRCFILES)
 # docs: .erl
 #	erl -noshell -run edoc_run application "'$@.erl'"\
 #	'"."' '[{def,{vsn,"$(VSN)"}}]'
+
+test: build
+	erl -noshell -pa ebin \
+	-eval 'eunit:test("ebin",[verbose])' \
+	-s init stop
