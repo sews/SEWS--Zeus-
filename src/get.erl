@@ -17,8 +17,8 @@
 %% @todo Implementera for more headers
 %% @since 2011-05-12 | 21:00
 
-handler({get, Tuple_list}) -> handlerAUX(Tuple_list);
-handler({_,_}) -> {error, notCorrectlyTagged}.
+handler({get, Tuple_list},Tab) -> handlerAUX(Tuple_list,Tab);
+handler({_,_},_) -> {error, notCorrectlyTagged}.
 
 %% //==================\\
 %% ||INTERNAL FUNCTIONS||
@@ -37,7 +37,7 @@ handler({_,_}) -> {error, notCorrectlyTagged}.
 handlerAUX(HList) -> 
     case lists:keysearch(path, 1, HList) of
 	{value,{path, Path}} ->
-	    case fm:getFile(Path) of
+	    case fm:getFile(Path,Tab) of
 			{ok, File_handle} ->
 				list_to_binary(fm:getContents(File_handle));
 			{error, eisdir} ->

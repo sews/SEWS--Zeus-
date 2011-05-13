@@ -9,26 +9,27 @@
 %%Post: A pid to the listening process
 %%S-E: Starts up the Sews server, listening on the given port
 start(Port)->
-    spawn(main,listen,[Port]). 
+    Tab = cache:start(),
+    spawn(main,listen,[Port,Tab]). 
 
 %%INTERNAL FUNCTIONS:
-listen(Port) ->
+listen(Port,Tab) ->
     {ok, LSocket} = gen_tcp:listen(Port, ?TCP_OPTIONS),
-    accept(LSocket).
+    accept(LSocket,Tab).
 
-accept(LSocket) ->
+accept(LSocket,Tab) ->
     {ok, Socket} = gen_tcp:accept(LSocket),
-    spawn(fun() -> handler(Socket) end),
-    accept(LSocket).
+    spawn(fun() -> handler(Socket,Tab) end),
+    accept(LSocket,Tab).
 
-handler(Socket) ->
+handler(Socket,Tab) ->
     case gen_tcp:recv(Socket, 0) of
         {ok, Indata} ->
 	    Parsed = sewsparser:parse(binary_to_list(Indata)),
 	    Outdata = 
 		case Parsed of
 		    {get, Parsed_list} -> 
-				get:handler(Parsed);
+				get:handler(Parsed,Tab);
 		    {post, Parsed_list} ->  
 				post:handler(Parsed);
 		    {error, Reason} ->
