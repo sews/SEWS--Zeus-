@@ -18,13 +18,12 @@ Clean Shit:
 
         Remove any “dicks” in code
 
-
-               fm - dennis
-	       get - Daniel
+	fm - dennis
+	get - Daniel
 					sewsparser -
-					sewsmain -
-	       error_mod - Per
-					gen_html -
+	sewsmain - alex
+	error_mod - Per
+	gen_html - Jonathan
  
 POST:
         Dennis, Jonathan

@@ -122,17 +122,17 @@ fixPath (Path) ->
 %%  Use FileHandle in all file information functions in this module.
 %%
 
-getFile(FileName) -> 
-	case file:read_file(FileName) of
-		{ok, Bin} ->
-			{ok, {binary_to_list(Bin), getFileInfo(FileName)}};
-		{error, eisdir} ->
-			{error, eisdir};
-		{error, enoent} ->
-			{error, enoent};
-		{error, Reason} ->
-			error_mod:handler(Reason)
-	end.
+getFile(Path,Tab) -> 
+    IsDir = filelib:is_dir(Path),
+    IsFile = filelib:is_file(Path),
+    if
+	IsDir -> 
+	    {error, eisdir};
+	IsFile -> 
+	    cache:read(Tab,Path);
+	true -> 
+	    {error, enoent}
+    end.
 
 
 %% 	 	getContents (FileHandle)

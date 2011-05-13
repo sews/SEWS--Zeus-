@@ -16,16 +16,22 @@ TESTOP = $(ERL) -noshell -s
 
 # All files
 # Deprecated
-SRCFILES = $(SRC)sewsmain.erl $(SRC)sewsparser.erl $(SRC)fm.erl $(SRC)get.erl $(SRC)gen_html.erl $(SRC)error_mod.erl
+SRCFILES = $(SRC)$(wildcard *.erl)
+
+# Beam file location
+EBIN = ebin/
+
+# All .beam files
+BEAMFILES = $(EBIN)$(SRCFILES: .erl = .beam)
 
 .PHONY: run build test clean rebuild doc docs
 
 # Runs when make is called without parameters
 all: build
 
-# Kompilerar alla filer, oavsett ålder..
-# Borde endast kompilera de som är
-# äldre än respektive .beam fil då :*.erl.
+# Kompilerar alla filer, oavsett ï¿½lder..
+# Borde endast kompilera de som ï¿½r
+# ï¿½ldre ï¿½n respektive .beam fil dï¿½ :*.erl.
 
 # TODO => Compile all .erl files older than respective .beam file
 build:
@@ -39,7 +45,7 @@ build:
 #.beam: $@.erl
 #	$(CC)
 
-# Behöver utökas?
+# Behï¿½ver utï¿½kas?
 # Test
 run: build
 	$(TESTOP) sewsmain start 8888
@@ -54,7 +60,7 @@ clean:
 rebuild: 
 	clean build
 
-# Gör denna, Edoc ska genereras automatiskt
+# Gï¿½r denna, Edoc ska genereras automatiskt
 # Generates Edoc
 doc: $(SRCFILES)
 	make $(DOCDIR)*.html
