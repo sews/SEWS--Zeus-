@@ -1,6 +1,6 @@
 
 -module(fm).
--export([getFile/1, getContents/1, getInfo/2, dirHandler/1, getInfoAll/1, fixPath/1]).
+-export([getFile/1, getContents/1, getInfo/2, dirHandler/1, getInfoAll/1, fixPath/1, uploadFile/2]).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -112,6 +112,14 @@ fixPath (Path) ->
 	end.
 
 
+uploadFile (FileName, FileContents) ->
+	case file:write_file(FileName, list_to_binary(FileContents)) of
+		ok ->
+			ok;
+		{error, Reason} ->
+			error_mod:handler(Reason)
+	end.
+
 %% @spec (FileName::string()) -> {FileData, FileInfo} | {error, eisdir} | {error, enoent} | {error_eval, Bin}
 %%
 %% @doc Returns 							{ok, FileHandle}	if file found. 
@@ -126,13 +134,13 @@ getFile(Path) ->
     IsDir = filelib:is_dir(Path),
     IsFile = filelib:is_file(Path),
     if
-	IsDir -> 
-	    {error, eisdir};
-	IsFile -> 
-	    Bin = cache:read(Path),
-	    {ok,{binary_to_list(Bin),getFileInfo(Path)}};
-	true -> 
-	    {error, enoent}
+		IsDir -> 
+		    {error, eisdir};
+		IsFile -> 
+	    	Bin = cache:read(Path),
+	    	{ok,{binary_to_list(Bin),getFileInfo(Path)}};
+		true -> 
+	    	{error, enoent}
     end.
 
 
