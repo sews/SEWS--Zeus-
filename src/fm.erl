@@ -120,7 +120,7 @@ uploadFile (FileName, FileContents) ->
 			error_mod:handler(Reason)
 	end.
 
-%% @spec (FileName::string()) -> {FileData, FileInfo} | {error, eisdir} | {error, enoent} | {error_eval, Bin}
+%% @spec (FileName::string()) -> {ok,FileData, FileInfo} | {error, eisdir} | {error, enoent} | {error_eval, Bin}
 %%
 %% @doc Returns 							{ok, FileHandle}	if file found. 
 %%	If FileName does not exist, returns		{error, enoent}

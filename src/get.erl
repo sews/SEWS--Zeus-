@@ -38,11 +38,11 @@ handlerAUX(HList) ->
     case lists:keysearch(path, 1, HList) of
 	{value,{path, Path}} ->
 	    case fm:getFile(Path) of
-			{ok, File_handle} ->
+			{ok, File_handle} -> 
 				list_to_binary(fm:getContents(File_handle));
 			{error, eisdir} ->
 				case fm:getFile(Path ++ "index.html") of
-					{ok, File_handle} ->
+					{ok, File_handle} -> %% 
 						list_to_binary(fm:getContents(File_handle));
 					{error, enoent} ->	
 						case fm:dirHandler(Path) of

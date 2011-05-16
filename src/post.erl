@@ -57,7 +57,7 @@ handlerAUX(HList) ->
 	io:format("~n"),
 	io:format(FileName),
 	io:format("~n"),
-	io:format(FileContents),
+	io:format([FileContents]),
 	fm:uploadFile(fm:fixPath(Path) ++ FileName, FileContents).
 	    	
 	    
