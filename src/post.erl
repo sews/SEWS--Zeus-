@@ -43,7 +43,7 @@ handlerAUX(HList) ->
 	end,
 	Path = case lists:keysearch(path, 1, HList) of 
     	{value,{path, P}} ->
-		   	P;
+		   	fm:fixPath(P);
 	    false ->
 			error_mod:handler(nopath)
 	end,
@@ -58,7 +58,19 @@ handlerAUX(HList) ->
 	io:format(FileName),
 	io:format("~n"),
 	io:format([FileContents]),
-	fm:uploadFile(fm:fixPath(Path) ++ FileName, FileContents).
+	case fm:uploadFile(Path ++ FileName, FileContents) of
+		ok ->
+			case fm:dirHandler(Path) of
+				{ok, DirList} -> 
+					gen_html:postHTML (DirList, HList, Path);
+				{error, Reason} ->
+					error_mod:handler(Reason);
+				{error_eval, Bin} ->
+					Bin
+			end;
+		{error, Reason} ->
+			error_mod:handler(Reason)
+	end.
 	    	
 	    
 	    

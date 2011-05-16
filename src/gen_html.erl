@@ -21,17 +21,22 @@
 %% @hidden@private Removed Host as a variable
 %% @since 12.05.11
 
-dirDocAux(DirList, Path, [])->
-    dirDocAux(DirList, Path, "<html><head><title>Index of " ++ Path ++ "</title></head><body><h1>Index of " ++ Path ++ "</h1><hr>");
-dirDocAux([File|FileTail], Path, Html) ->
+dirDocAux(DirList, Path, Mode, []) ->
+	case Mode of
+		dirlist ->
+    		dirDocAux(DirList, Path, Mode, "<html><head><title>Index of " ++ Path ++ "</title></head><body><h1>Index of " ++ Path ++ "</h1><hr>");
+    	upload ->
+    		dirDocAux(DirList, Path, Mode, "<html><head><title>Index of " ++ Path ++ "</title></head><body><h1>Index of " ++ Path ++ "</h1><hr><h2>File successfully uploaded :D</h2><hr>")
+    end;
+dirDocAux([File|FileTail], Path, Mode, Html) ->
     IsDir = filelib:is_dir(Path ++ File),
     case IsDir of
 	 true -> %% File refers to a directory
-	    dirDocAux(FileTail, Path, Html ++ "[Dir] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />");
+	    dirDocAux(FileTail, Path, Mode, Html ++ "[Dir] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />");
 	false -> %% File refers to a file
-	    dirDocAux(FileTail, Path, Html ++ "[File] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />")
+	    dirDocAux(FileTail, Path, Mode, Html ++ "[File] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />")
     end;
-dirDocAux([], _, Html) ->
+dirDocAux([], _, _, Html) ->
     Html ++ "<hr></body></html>".
     
 %% //==================\\
@@ -52,7 +57,10 @@ dirDoc(DirList, HList)->
 	       	false ->
 		   	error_mod:handler(nopath)
 	   	end,
-    dirDocAux(DirList, Path, []).
+    dirDocAux(DirList, Path, dirlist, []).
+    
+    
+postHTML (Dir, HList, Path) -> dirDocAux (Dir, Path, upload, []).
     
     
 %% TEST CASES
