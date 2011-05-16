@@ -25,21 +25,21 @@ accept(LSocket) ->
 handler(Socket) ->
     case gen_tcp:recv(Socket, 0) of
         {ok, Indata} ->
-	    Parsed = parser:parse(binary_to_list(Indata)),
-	    Outdata = 
-		case Parsed of
-		    {get, _} -> 
-				get:handler(Parsed);
-		    {post, _} ->  
-				post:handler(Parsed);
-		    {error, Reason} ->
-				{error_eval, Bin} = error_mod:handler(Reason),
-				Bin
-		end,
-	    io:format("Request: ~n~p~n",[Indata]),
-	    io:format("Answer: ~n~p~n",[Outdata]),
-	    gen_tcp:send(Socket, Outdata),
-	    gen_tcp:close(Socket);
-        {error, closed} ->
-            ok %% TODO: Fixa errorhantering här
+		    io:format("Request: ~n~p~n",[Indata]),
+			Parsed = parser:parse(binary_to_list(Indata)),
+			Outdata = 
+			case Parsed of
+				{get, _} -> 
+					get:handler(Parsed);
+				{post, _} ->  
+					post:handler(Parsed);
+				{error, Reason} ->
+					{error_eval, Bin} = error_mod:handler(Reason),
+					Bin
+			end,
+			io:format("Answer: ~n~p~n",[Outdata]),
+			gen_tcp:send(Socket, Outdata),
+			gen_tcp:close(Socket);
+		    {error, closed} ->
+		        ok %% TODO: Fixa errorhantering här
     end.

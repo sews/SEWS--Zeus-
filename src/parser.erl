@@ -50,6 +50,10 @@ parse(Input)->
 
 %%%%%%%%%%%%%% INTERNAL FUNCTIONS %%%%%%%%%%%%%%
 
+%% @spec token(String::list, Token::char, LastWord::list, Acc::list) -> String::list
+%% @doc Splits up String into several substrings each separated by Token (better than string:tokens by approx. 17x)
+%% Example:		token("alex\non\nbig\n\nhorse", $\n, [], []) = ["alex", "on", "big", "", "horse"] 
+
 token([], _, LastWord, Acc)				-> lists:reverse ([LastWord | Acc]);
 token([H | Rest], Token, LastWord, Acc) ->
 	case H =:= Token of
@@ -112,13 +116,14 @@ parseGET([[H|InnerTail]|MainTail],ParsedList) ->
     end.
 
 
-%% Pre: A correctly formated POST request starting with the path
-%% Post: A tupple of the format {post, Tuple_list} or {error, Reason}, where Tuple_list consists of tuples of the format {header_atom(), Data}
-%% S-E None	    
+%% @spec parseFile(TheList::list) -> TheList::list
+%% @doc Returns a copy of list with the last two elements deleted
 
 parseFile ([_, _]) -> [];
 parseFile ([H | Rest]) ->
 	[H | parseFile(Rest)].
+	
+
 	
 
 parsePOSTAux([], _) -> [];	%% not gonna happen
@@ -141,6 +146,10 @@ parsePOSTAux([H | Rest], ParsedList) ->
 		"\r" ->
 			[{file, string:join(parseFile(Rest), "\n")} | ParsedList]
 	end.
+	
+	
+%% @spec pOSTProcessing(StringList::list) -> StringList::list
+%% @doc Removes all tuples with a "/r" key from StringList except for key = file
 
 pOSTProcessing([]) -> [];
 pOSTProcessing([{Atom, Value} | Rest]) ->
@@ -193,6 +202,7 @@ parsePOST([H | Rest], ParsedList) ->
 				{value, {_, Boundary}} ->
 					case Key =:= Boundary of
 						true ->
+							io:format("~n~nTHE REST !!: ~p~n~n", [Rest]),
 							{post, pOSTProcessing (parsePOSTAux(Rest, []) ++ ParsedList)};
 						false ->
 							parsePOST(Rest, ParsedList)
