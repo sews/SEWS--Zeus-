@@ -116,6 +116,8 @@ uploadFile (FileName, FileContents) ->
 	case file:write_file(FileName, list_to_binary(FileContents)) of
 		ok ->
 			ok;
+		{error, eisdir} ->
+			error_mod:handler(enoname);
 		{error, Reason} ->
 			error_mod:handler(Reason)
 	end.

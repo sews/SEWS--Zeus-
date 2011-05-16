@@ -7,6 +7,8 @@
 handler(Reason) ->
 	{error_eval, list_to_binary("<html><head><title>Error</title></head><body>" ++ 
 	case Reason of
+		enoname ->
+			"9000 - Invalid file name for uploading you deep shit";
 		enoent ->
 			"404 - File not found error";
 		eaccess ->

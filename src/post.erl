@@ -39,19 +39,19 @@ handlerAUX(HList) ->
 		{value, {filename, FN}} ->
 			FN;
 		false ->
-			error_mod:handler(nofilename)
+			{error, enoent}
 	end,
 	Path = case lists:keysearch(path, 1, HList) of 
     	{value,{path, P}} ->
 		   	fm:fixPath(P);
 	    false ->
-			error_mod:handler(nopath)
+			{error, enoent}
 	end,
 	FileContents = case lists:keysearch(file, 1, HList) of 
 		{value, {file, F}} ->
 			F;
 		false ->
-			error_mod:handler(nofile)
+			{error, enoent}
 	end,
 	io:format(Path),
 	io:format("~n"),
@@ -63,13 +63,15 @@ handlerAUX(HList) ->
 			case fm:dirHandler(Path) of
 				{ok, DirList} -> 
 					gen_html:postHTML (DirList, HList, Path);
-				{error, Reason} ->
-					error_mod:handler(Reason);
 				{error_eval, Bin} ->
-					Bin
+					Bin;
+				ErrorTuple ->
+					ErrorTuple
 			end;
-		{error, Reason} ->
-			error_mod:handler(Reason)
+		{error_eval, Bin} ->
+			Bin;
+		ErrorTuple ->
+			ErrorTuple
 	end.
 	    	
 	    
