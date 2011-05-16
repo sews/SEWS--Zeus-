@@ -159,6 +159,13 @@ pOSTProcessing([{Atom, Value} | Rest]) ->
 		_ ->
 			[{Atom, lists:delete($\r, Value)} | pOSTProcessing(Rest)]
 	end.
+	
+	
+%% @spec parsePOST(String::list,Tuple::list) -> Tuple::list
+%% @todo Implementera för fler headers 
+%% @doc Parse out the keywords and the relevant data from the keywords
+%% Pre: A correctly formated POST request starting with the path
+%% Post: A tuple of the format {post, TupleList} or {error, Reason}, where TupleList consists of tuples of the format {header_atom(), Data}
 
 parsePOST([], ParsedList) -> {post, ParsedList};
 parsePOST([H | Rest], []) ->
@@ -169,8 +176,8 @@ parsePOST([H | Rest], ParsedList) ->
 	Value = case string:chr(H, $\ ) of
 		0 ->
 			"";
-		Kawk ->
-			string:sub_string(H, Kawk+1)
+		Any ->
+			string:sub_string(H, Any+1)
 	end,
 	case Key of
 		"Host:" ->
@@ -202,7 +209,6 @@ parsePOST([H | Rest], ParsedList) ->
 				{value, {_, Boundary}} ->
 					case Key =:= Boundary of
 						true ->
-							io:format("~n~nTHE REST !!: ~p~n~n", [Rest]),
 							{post, pOSTProcessing (parsePOSTAux(Rest, []) ++ ParsedList)};
 						false ->
 							parsePOST(Rest, ParsedList)
