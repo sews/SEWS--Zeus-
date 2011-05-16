@@ -63,6 +63,13 @@ read(Path) ->
     end.
     
 			    
-		    
+		  
 %% TEST CASES
+
+
+  read_test() ->
+    start(),
+    {ok, Bin} = file:read_file("./cache.erl"),
+   [?assertEqual(Bin,read("./cache.erl")),
+    ?assertEqual({error,eisdir},read("./"))].
 
