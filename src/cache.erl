@@ -10,6 +10,8 @@
 -module(cache).
 -compile(export_all).
 
+-include_lib("eunit/include/eunit.hrl").
+
 -define(ETS_OPTIONS,[set,named_table,public]).
 
 
@@ -62,3 +64,5 @@ read(Path) ->
     
 			    
 		    
+%% TEST CASES
+
