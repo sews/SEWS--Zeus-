@@ -2,6 +2,7 @@
 -compile(export_all).
 
 -define(ETS_OPTIONS,[set,named_table,public]).
+-definve(MAX_FILE_SIZE,3000000).
 
 start()->
     ets:new(etstab,?ETS_OPTIONS).
@@ -18,6 +19,8 @@ read(Path) ->
 		    {error, Reason};
 		{ok, FileInfo} ->
 		    Date = element(6,FileInfo),
+		    Size = element(2,FileInfo),
+		    
 		    case ets:member(etstab,Path) of
 			true ->
 			    EtsDate = ets:lookup_element(etstab,Path,2),
@@ -28,7 +31,7 @@ read(Path) ->
 				true ->
 				    {ok, Bin} = file:read_file(Path),
 				    ets:insert(etstab,{Path,Date,Bin}),
-				    io:format("DATE EXPIRED"),			     
+				    io:format("DATE EXPIRED"),			
 				    Bin
 			    end;
 			_ ->
@@ -44,3 +47,7 @@ read(Path) ->
     
 			    
 		    
+lru()->
+    LruList = ets:lookup_element(etstab,lru,2),
+    
+    

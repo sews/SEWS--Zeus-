@@ -3,7 +3,8 @@
 %% @since 12.05.11
 
 -module(gen_html).
--export([dirDoc/2]).
+%-export([dirDoc/2]).
+-compile(export_all).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -60,3 +61,70 @@ dirDoc_test() ->
 	?assertEqual("<html><head><title>Index of hej</title></head><body><h1>Index of hej</h1><hr><hr></body></html>", dirDoc([], [{path, "hej"},{host, ""}])).
 
 
+%% serverHeaders() ->
+%%     "HTTP/1.1 200 OK:
+%% Content-Type: "++ contType() ++ "
+%% Last-Modified: " ++ lastMod()  ++  "
+%% Accept-Ranges: bytes
+%% Server: Sews Server version 0.2
+%% Date: "++ dateHeader()  ++"
+%% Connection: keep-alive
+%% Content-Length:" ++ contLength().
+
+dateHeader() ->
+    {{Year,Month,Day},{Hour,Min,Seconds}} = calendar:universal_time(),
+    weekday({Year,Month,Day}) ++ ", " ++ atoi(Day)++ " " ++ month(Month) ++ " " ++ atoi(Year) ++ " " ++ hours({Hour,Min,Seconds}) ++ " GMT".
+
+weekday(Date) ->
+    Num = calendar:day_of_the_week(Date),
+    case Num of
+	1 -> "Mon";
+	2 -> "Tue";
+	3 -> "Wen";
+	4 -> "Thu";
+	5 -> "Fri";
+	6 -> "Sat";
+	7 -> "Sun";
+	_ -> error
+    end.
+
+month(Month) ->
+    case Month of
+	1 -> "Jan";
+	2 -> "Feb";
+	3 -> "Mar";
+	4 -> "Apr";
+	5 -> "May";
+	6 -> "Jun";
+	7 -> "Jul";
+	8 -> "Aug";
+	9 -> "Sep";
+	10 -> "Oct";
+	11 -> "Nov";
+	12 -> "Dec";
+	_  -> error
+    end.
+	    
+hours({Hour,Min,Seconds}) ->
+    FormHours = if
+		    Hour < 10 -> "0" ++ atoi(Hour);
+		    true -> atoi(Hour)
+    end,
+    FormMin = if
+		  Min < 10 -> "0" ++ atoi(Min);
+		  true -> atoi(Min)
+	      end,
+    FormSec = if
+		  Seconds < 10 -> "0" ++ atoi(Seconds);
+		  true -> atoi(Seconds)
+	      end,
+    FormHours ++ ":" ++ FormMin ++ ":" ++ FormSec.
+			  
+    
+	    
+    
+
+
+%%% Converts an integer to a string	    
+atoi(Num) ->
+    lists:flatten(io_lib:format("~p", [Num])).
