@@ -119,10 +119,10 @@ lru(Path) ->
 %% TEST CASES
 
 
-read_test() ->
-    start(),
-    {ok, Bin} = file:read_file("./cache.erl"),
-    [?assertEqual(Bin,read("./cache.erl")),
-     ?assertEqual({error,eisdir},read("./")),
-     ?assertEqual({error,enoent},read("./gaeha/fade"))].
+ %% read_test() ->
+ %%   start(),
+ %%    {ok, Bin} = file:read_file("./cache.erl"),
+ %%    [?assertEqual(Bin,read("./cache.erl")),
+ %%     ?assertEqual({error,eisdir},read("./")),
+ %%     ?assertEqual({error,enoent},read("./gaeha/fade"))].
 
