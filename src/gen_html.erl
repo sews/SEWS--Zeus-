@@ -7,6 +7,7 @@
 -compile(export_all).
 
 -include_lib("eunit/include/eunit.hrl").
+-include_lib("kernel/include/file.hrl").
 
 %% //==================\\
 %% ||INTERNAL FUNCTIONS||
@@ -69,18 +70,21 @@ dirDoc_test() ->
 	?assertEqual("<html><head><title>Index of hej</title></head><body><h1>Index of hej</h1><hr><hr></body></html>", dirDoc([], [{path, "hej"},{host, ""}])).
 
 
-%% serverHeaders() ->
+%% serverHeaders(FileAtom,Path) ->
+%%     {ok, FileInfo} = file:read_file_info(Path),
+%%     LastModTime = element(6,FileInfo),
 %%     "HTTP/1.1 200 OK:
 %% Content-Type: "++ contType() ++ "
-%% Last-Modified: " ++ lastMod()  ++  "
+%% Last-Modified: " ++ dateHeader(LastModTime)  ++  "
 %% Accept-Ranges: bytes
 %% Server: Sews Server version 0.2
-%% Date: "++ dateHeader()  ++"
+%% Date: "++ dateHeader(calendar:universal_time()) ++"
 %% Connection: keep-alive
-%% Content-Length:" ++ contLength().
+%% Content-Length:" ++ contLength() ++ "\n\n".
 
-dateHeader() ->
-    {{Year,Month,Day},{Hour,Min,Seconds}} = calendar:universal_time(),
+    
+dateHeader(Time) ->
+    {{Year,Month,Day},{Hour,Min,Seconds}} = Time,
     weekday({Year,Month,Day}) ++ ", " ++ atoi(Day)++ " " ++ month(Month) ++ " " ++ atoi(Year) ++ " " ++ hours({Hour,Min,Seconds}) ++ " GMT".
 
 weekday(Date) ->
