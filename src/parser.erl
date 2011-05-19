@@ -130,7 +130,8 @@ parseGET([[H|InnerTail]|MainTail],ParsedList) ->
 %% @since 19.05.11
 
 parseFile ([A, B], Boundary, Acc) -> 
-	case B =:= Boundary of
+        Mahboy = string:strip(B, left, $-),
+	case Mahboy =:= Boundary of
 		true ->
 			{yes, lists:reverse(Acc)};
 		false ->
@@ -223,8 +224,8 @@ parsePOST([H | Rest], ParsedList) ->
 			parsePOST(Rest,[{referer, Value} | ParsedList]);
 		"Content-Type:" ->
 			MultiPart = string:sub_word(Value, 1, $;),
-			Boundary = string:sub_word(H, 2, $=),
-			parsePOST(Rest, [{content_type, MultiPart}, {boundary, "--" ++ Boundary} | ParsedList]);
+			Boundary = string:strip(string:sub_word(H, 2, $=), left, $-),
+			parsePOST(Rest, [{content_type, MultiPart}, {boundary, Boundary} | ParsedList]);
 		"Content-Length:" ->
 			parsePOST(Rest,[{content_length, Value} | ParsedList]);
 		_ ->
@@ -232,7 +233,8 @@ parsePOST([H | Rest], ParsedList) ->
 				false ->
 					parsePOST(Rest, ParsedList);
 				{value, {_, Boundary}} ->
-					case Key =:= Boundary of
+				        StrippedKey = string:strip(Key, left, $-),
+					case StrippedKey =:= Boundary of
 						true ->
 							{post, pOSTProcessing(parsePOSTAux(Rest, Boundary, []) ++ ParsedList)};
 						false ->

@@ -126,7 +126,8 @@ fixPath (Path) ->
 	end.
 
 
-uploadFile (FileName, FileContents) ->
+uploadFile (WebPath, FileContents) ->
+        FileName = ?WWW_ROOT ++ WebPath,
 	case file:write_file(FileName, list_to_binary(FileContents)) of
 		ok ->
 			ok;

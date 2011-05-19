@@ -24,14 +24,17 @@ accept(LSocket) ->
     accept(LSocket).
     
 handleMultiPart(Socket, Boundary, File) ->
-	case gen_tcp:recv(Socket, 0, 1337) of
+        io:format("~nBoundary YEEAAAH: ~p~n", [Boundary]),
+	case gen_tcp:recv(Socket, 0, 3000) of
 		{ok, Indata} ->
 			String = binary_to_list(Indata),
-			case string:rstr(String, "\r\n" ++ Boundary) of
+		io:format("~n~p~n~n", [Indata]),
+			case string:rstr(String, Boundary) of
 				0 ->
 					handleMultiPart(Socket, Boundary, File ++ String);
-				Num ->
-					File ++ string:sub_string(String, 1, length(String) - Num)
+				_ ->
+				        Num2 = string:rstr(String,"\r\n-"),
+					File ++ string:sub_string(String, 1, Num2)
 			end;
 		{error, etimedout} ->
 			hej;
@@ -65,21 +68,30 @@ handler(Socket) ->
 					end,
 					case lists:keysearch(part, 1, P) of
 						{value, {part, multipart}} ->
-							MegaFile = handleMultiPart(Socket, Boundary, File),
-							MegaParsed = lists:keyreplace(file, 1, Parsed, {file, MegaFile}),
-							post:handler(MegaParsed);
+						        case handleMultiPart(Socket, Boundary, File) of
+							    {error, Reason} ->
+								error_mod:handler(Reason);
+							    MegaFile ->
+								MegaParsed = lists:keyreplace(file, 1, P, {file, MegaFile}),
+								post:handler({post, MegaParsed})
+							end;
 						{value, {part, single}} ->
-							post:handler(Parsed)
+							post:handler(Parsed);
+					        {error_eval, Bin} ->
+										Bin
 					end;
 				{error, Reason} ->
-					error_mod:handler(Reason)
+					error_mod:handler(Reason);
+			        {error_eval, Bin} ->
+				        Bin
 			end;
 		{error, closed} ->
-			error_mod:handler(socket)
+			{LoL, Bin} = error_mod:handler(socket),
+		        Bin
     end,
     io:format("Answer: ~n~p~n",[Outdata]),
     gen_tcp:send(Socket, Outdata),
-	gen_tcp:close(Socket).
+    gen_tcp:close(Socket).
 	
 	
 	

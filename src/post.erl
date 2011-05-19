@@ -53,6 +53,7 @@ handlerAUX(HList) ->
 		false ->
 			{error, enoent}
 	end,
+        io:format("~n~n~n~p~n~n~n~n~n", [FileContents]),
 	Boundary = case lists:keysearch(boundary, 1, HList) of 
     	{value, {boundary, B}} ->
 		   	B;
@@ -63,7 +64,7 @@ handlerAUX(HList) ->
 	io:format("~n"),
 	io:format(FileName),
 	io:format("~n"),
-	io:format([FileContents]),
+	%%io:format([FileContents]),
 	case fm:uploadFile(Path ++ FileName, FileContents) of
 		ok ->
 			case fm:dirHandler(Path) of
