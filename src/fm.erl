@@ -29,7 +29,7 @@ getContentType(FileName) ->
 		"html" ->
 			"text/html";
 		_ ->
-			"text/plain"
+			"application/octet-stream"
 	end.
 	
 	
