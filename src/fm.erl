@@ -113,7 +113,7 @@ fixPath (Path) ->
 	%%	Any ->
 	%%		?WWW_ROOT ++ Path1
 	%%end,
-	case filelib:is_dir(Path2) of
+	case filelib:is_dir(?WWW_ROOT ++ Path2) of
 		true ->
 			case lists:last(Path2) of	%% check for "/" at end of path
 				$/ ->

@@ -9,6 +9,8 @@
 -include_lib("eunit/include/eunit.hrl").
 -include_lib("kernel/include/file.hrl").
 
+-define(WWW_ROOT, "/home").
+
 %% //==================\\
 %% ||INTERNAL FUNCTIONS||
 %% \\==================//
@@ -34,7 +36,7 @@ dirDocAux(DirList, Path, Mode, []) ->
     		dirDocAux(DirList, Path, Mode, HTMLString ++ "<h2>File successfully uploaded :D</h2><hr>")
     end;
 dirDocAux([File|FileTail], Path, Mode, Html) ->
-    IsDir = filelib:is_dir(Path ++ File),
+    IsDir = filelib:is_dir(?WWW_ROOT ++ Path ++ File),
     case IsDir of
 	 	true -> %% File refers to a directory
 	    	dirDocAux(FileTail, Path, Mode, Html ++ "[Dir] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />");
