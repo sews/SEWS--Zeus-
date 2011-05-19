@@ -1,16 +1,18 @@
 -module(main).
--export([start/1,listen/1]).
+-export([start/0,listen/1]).
 
 -define(TCP_OPTIONS, [binary, {packet, 0}, {active, false}, {reuseaddr, true}]).
+
+-define(DEFAULT_PORT, 8080).
 
 %%EXTERNAL FUNCTIONS:
 %%start(Port) -> <Pid>
 %%Pre: A port that the server will listen on
 %%Post: A pid to the listening process
 %%S-E: Starts up the Sews server, listening on the given port
-start(Port)->
+start()->
     cache:start(),
-    spawn(main,listen,[Port]). 
+    spawn(main,listen,[?DEFAULT_PORT]). 
 
 %%INTERNAL FUNCTIONS:
 listen(Port) ->
