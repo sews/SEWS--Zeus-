@@ -53,6 +53,12 @@ handlerAUX(HList) ->
 		false ->
 			{error, enoent}
 	end,
+	Boundary = case lists:keysearch(boundary, 1, HList) of 
+    	{value, {boundary, B}} ->
+		   	B
+	    false ->
+			{error, enoent}
+	end,
 	io:format(Path),
 	io:format("~n"),
 	io:format(FileName),

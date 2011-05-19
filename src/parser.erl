@@ -129,8 +129,14 @@ parseGET([[H|InnerTail]|MainTail],ParsedList) ->
 %% @doc Returns a copy of list with the last two elements deleted
 %% @since 19.05.11
 
-parseFile ([_, _]) -> [];
-parseFile ([H | Rest]) ->
+parseFile ([A, B], Boundary) -> 
+	case B =:= Boundary of
+		true ->
+			[];
+		false ->
+			[A, B]
+	end;
+parseFile ([H | Rest], Boundary) ->
 	[H | parseFile(Rest)].
 
 %% pOSTProcessing(StringList::list)		

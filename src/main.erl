@@ -21,6 +21,23 @@ accept(LSocket) ->
     {ok, Socket} = gen_tcp:accept(LSocket),
     spawn(fun() -> handler(Socket) end),
     accept(LSocket).
+    
+handleMultiPart(Socket, Boundary, File) ->
+	case gen_tcp:recv(Socket, 0, 1337) of
+		{ok, Indata} ->
+			String = binary_to_list(Indata),
+			case string:rstr(String, "\r\n" ++ Boundary) of
+				0 ->
+					handleMultiPart(Socket, Boundary, File ++ String);
+				Num ->
+					Substr = string:sub_string(String, 1, length(String) - Num),
+					handleMultiPart(Socket, Boundary, File ++ Substr)
+			end
+		{error,  ->
+			eror
+	end,
+	timeout.
+
 
 handler(Socket) ->
     Outdata = case gen_tcp:recv(Socket, 0) of
@@ -30,8 +47,15 @@ handler(Socket) ->
 			case Parsed of
 				{get, _} -> 
 					get:handler(Parsed);
-				{post, _} ->  
-					post:handler(Parsed);
+				{post, P} -> 
+					MegaParsed = case lists:keysearch(part, 1, P) of
+						{value, {part, continue}} ->
+							handleMultiPart(Socket, P, Boundary);
+						false ->
+							fack
+					end, 
+					case post:handler(MegaParsed) of
+
 				{error, Reason} ->
 					{error_eval, Bin} = error_mod:handler(Reason),
 					Bin
@@ -40,12 +64,8 @@ handler(Socket) ->
 		        ok %% TODO: Fixa errorhantering här
     end,
     io:format("Answer: ~n~p~n",[Outdata]),
-    case gen_tcp:recv(Socket, 0) of 
-    	{ok, Hej} ->
-    		io:format(Hej);
-    	{error, closed} ->
-    		io:format("~n~nNO MORE SOCKET THINGS~n~n"),
-    		ok
-    end,
     gen_tcp:send(Socket, Outdata),
 	gen_tcp:close(Socket).
+	
+	
+	
