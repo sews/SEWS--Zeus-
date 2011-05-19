@@ -101,21 +101,28 @@ dirHandler(WebDir) ->
 %% @doc	Returns a modified version of Path that both begins and ends with the $/. character. If both $/. are already present, Path is returned unchanged.
 	
 fixPath (Path) ->
-	Path1 = case Path of	%% check for "/" at start of path
-		[$/ | _] ->	Path;
+	Path2 = case Path of	%% check for "/" at start of path
+		[$/ | _] ->	
+			Path;
 		_		 ->
 			[$/ | Path]
 	end,
-	case filelib:is_dir(Path1) of
+	%%Path2 = case string:str(Path1, ?WWW_ROOT) of	%% check for web root
+	%%	1 ->
+	%%		Path1;
+	%%	Any ->
+	%%		?WWW_ROOT ++ Path1
+	%%end,
+	case filelib:is_dir(Path2) of
 		true ->
-			case lists:last(Path1) of	%% check for "/" at end of path
+			case lists:last(Path2) of	%% check for "/" at end of path
 				$/ ->
-					Path1;
+					Path2;
 				_ ->
-					Path1 ++ "/"
+					Path2 ++ "/"
 			end;
 		false ->
-			Path1
+			Path2
 	end.
 
 
@@ -139,7 +146,7 @@ uploadFile (FileName, FileContents) ->
 %%  Use FileHandle in all file information functions in this module.
 %%
 
-getFile(WebPath) -> 
+getFile(WebPath) ->
 	Path = ?WWW_ROOT ++ WebPath,
     IsDir = filelib:is_dir(Path),
     IsFile = filelib:is_file(Path),

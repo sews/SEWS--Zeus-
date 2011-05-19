@@ -48,7 +48,7 @@ parse(Input)->
         			parseGET([Tail | MainTail], []);
         "POST" -> 	L = token(Input, $\n, [], []),
         			parsePOST(L, []);
-        _ -> error_mod:handler(faulty_request)
+        _ -> 		error_mod:handler(faulty_request)
     end.
 
 %% //==================\\
@@ -102,7 +102,7 @@ parseGET([],ParsedList)->
 parseGET([H|MainTail], []) ->
     [Path|_] = H,
     PathFixed = replaceHtmlSpace(Path),
-    parseGET(MainTail,[{path,fm:fixPath(PathFixed)}]);
+    parseGET(MainTail,[{path, fm:fixPath(PathFixed)}]);
 parseGET([[H|InnerTail]|MainTail],ParsedList) ->
 	    case H of
 		"Host:" ->
@@ -129,15 +129,15 @@ parseGET([[H|InnerTail]|MainTail],ParsedList) ->
 %% @doc Returns a copy of list with the last two elements deleted
 %% @since 19.05.11
 
-parseFile ([A, B], Boundary) -> 
+parseFile ([A, B], Boundary, Acc) -> 
 	case B =:= Boundary of
 		true ->
-			[];
+			{yes, lists:reverse(Acc)};
 		false ->
-			[A, B]
+			{no, lists:reverse([B, A | Acc])}
 	end;
-parseFile ([H | Rest], Boundary) ->
-	[H | parseFile(Rest)].
+parseFile ([H | Rest], Boundary, Acc) ->
+	parseFile(Rest, Boundary, [H | Acc]).
 
 %% pOSTProcessing(StringList::list)		
 %% @spec (StringList::list) -> StringList::list
@@ -146,11 +146,11 @@ parseFile ([H | Rest], Boundary) ->
 
 pOSTProcessing([]) -> [];
 pOSTProcessing([{Atom, Value} | Rest]) ->
-	case Atom of
-		file ->
-			[{Atom, Value} | pOSTProcessing(Rest)];
+	case Value of
+		Value when is_list(Value) ->
+			[{Atom, lists:delete($\r, Value)} | pOSTProcessing(Rest)];
 		_ ->
-			[{Atom, lists:delete($\r, Value)} | pOSTProcessing(Rest)]
+			[{Atom, Value} | pOSTProcessing(Rest)]
 	end.
 
 %% parsePOSTAux(String::list, Tuple::list)
@@ -158,8 +158,8 @@ pOSTProcessing([{Atom, Value} | Rest]) ->
 %% @doc Parse out the keywords and the relevant data from the keywords
 %% @since 19.05.11
 
-parsePOSTAux([], _) -> [];	%% not gonna happen
-parsePOSTAux([H | Rest], ParsedList) ->
+parsePOSTAux([], _, _) -> [];	%% not gonna happen
+parsePOSTAux([H | Rest], Boundary, ParsedList) ->
 	Key   = string:sub_word(H, 1),
 	Value = case string:chr(H, $\ ) of
 		0 ->
@@ -170,13 +170,18 @@ parsePOSTAux([H | Rest], ParsedList) ->
 	case Key of
 		"Content-Disposition:" ->
 			Start 			= string:str(Value, "filename=") + 9,
-		        StrippedString 	        = lists:delete($\", lists:delete($\", string:sub_string(Value, Start))),
+		    StrippedString	= lists:delete($\", lists:delete($\", string:sub_string(Value, Start))),
 			FileName 		= string:sub_word(StrippedString, 1, $;),
-			parsePOSTAux(Rest, [{filename, FileName} | ParsedList]);
+			parsePOSTAux(Rest, Boundary, [{filename, FileName} | ParsedList]);
 		"Content-Type:" ->
-			parsePOSTAux(Rest, ParsedList);
+			parsePOSTAux(Rest, Boundary, ParsedList);
 		"\r" ->
-			[{file, string:join(parseFile(Rest), "\n")} | ParsedList]
+			case parseFile(Rest, Boundary, []) of
+				{yes, File} ->
+					[{part, single}, {file, string:join(File, "\n")} | ParsedList];
+				{no, File} ->
+					[{part, multipart}, {file, string:join(File, "\n")} | ParsedList]
+			end
 	end.
 
 %% parsePOST(String::list,Tuple::list)		
@@ -229,7 +234,7 @@ parsePOST([H | Rest], ParsedList) ->
 				{value, {_, Boundary}} ->
 					case Key =:= Boundary of
 						true ->
-							{post, pOSTProcessing(parsePOSTAux(Rest, []) ++ ParsedList)};
+							{post, pOSTProcessing(parsePOSTAux(Rest, Boundary, []) ++ ParsedList)};
 						false ->
 							parsePOST(Rest, ParsedList)
 					end
@@ -248,7 +253,7 @@ replaceHtml_test() ->
     ?assertEqual("  a s d   ", replaceHtmlSpace("%20%20a%20s%20d%20%20%20")).
 
 parseFile_test() ->
-    ?assertEqual([a,b], parseFile([a,b,c,d])).
+    ?assertEqual({no, [a,b,c,d]}, parseFile([a,b,c,d], "qweqwe", [])).
 
 token_test() ->
     ?assertEqual(["alex", "on", "big", "", "horse"], token("alex\non\nbig\n\nhorse", $\n, [], [])). 

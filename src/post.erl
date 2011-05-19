@@ -55,7 +55,7 @@ handlerAUX(HList) ->
 	end,
 	Boundary = case lists:keysearch(boundary, 1, HList) of 
     	{value, {boundary, B}} ->
-		   	B
+		   	B;
 	    false ->
 			{error, enoent}
 	end,

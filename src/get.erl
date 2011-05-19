@@ -37,7 +37,7 @@ handler({_,_}) -> {error, notCorrectlyTagged}.
 
 handlerAUX(HList) -> 
     case lists:keysearch(path, 1, HList) of
-	{value,{path, Path}} ->
+	{value, {path, Path}} ->
 	    case fm:getFile(Path) of
 			{ok, File_handle} -> 
 				list_to_binary(fm:getContents(File_handle));
