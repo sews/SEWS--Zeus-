@@ -23,22 +23,42 @@
 %% @since 12.05.11
 
 dirDocAux(DirList, Path, Mode, []) ->
+	HTMLString = "<html><head><title>Index of " ++ Path ++ "</title></head><body>
+	
+	<table><tr><td><h1>Index of " ++ Path ++ "</h1><hr>",
+	
 	case Mode of
 		dirlist ->
-    		dirDocAux(DirList, Path, Mode, "<html><head><title>Index of " ++ Path ++ "</title></head><body><h1>Index of " ++ Path ++ "</h1><hr>");
+    		dirDocAux(DirList, Path, Mode, HTMLString);
     	upload ->
-    		dirDocAux(DirList, Path, Mode, "<html><head><title>Index of " ++ Path ++ "</title></head><body><h1>Index of " ++ Path ++ "</h1><hr><h2>File successfully uploaded :D</h2><hr>")
+    		dirDocAux(DirList, Path, Mode, HTMLString ++ "<h2>File successfully uploaded :D</h2><hr>")
     end;
 dirDocAux([File|FileTail], Path, Mode, Html) ->
     IsDir = filelib:is_dir(Path ++ File),
     case IsDir of
-	 true -> %% File refers to a directory
-	    dirDocAux(FileTail, Path, Mode, Html ++ "[Dir] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />");
-	false -> %% File refers to a file
-	    dirDocAux(FileTail, Path, Mode, Html ++ "[File] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />")
+	 	true -> %% File refers to a directory
+	    	dirDocAux(FileTail, Path, Mode, Html ++ "[Dir] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />");
+		false -> %% File refers to a file
+	    	dirDocAux(FileTail, Path, Mode, Html ++ "[File] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />")
     end;
 dirDocAux([], _, _, Html) ->
-    Html ++ "<hr></body></html>".
+    Html ++ "</td><td>
+    
+    	<FORM action=\"\" 
+    		  enctype=\"multipart/form-data\"
+			  method=\"post\">
+			<P>
+				<INPUT 	type=\"file\"  
+          				name=\"fileselect\"
+          				value=\"defaultfile\">
+        	<P>
+
+        		<INPUT 	type=\"submit\" 
+        				value=\"Upload\">
+		</FORM>
+
+    
+    </td></tr></table><hr></body></html>".
     
 %% //==================\\
 %% ||EXPORTED FUNCTIONS||
@@ -62,12 +82,6 @@ dirDoc(DirList, HList)->
     
     
 postHTML (Dir, HList, Path) -> dirDocAux (Dir, Path, upload, []).
-    
-    
-%% TEST CASES
-
-dirDoc_test() ->
-	?assertEqual("<html><head><title>Index of hej</title></head><body><h1>Index of hej</h1><hr><hr></body></html>", dirDoc([], [{path, "hej"},{host, ""}])).
 
 
 %% serverHeaders(FileAtom,Path) ->
@@ -140,3 +154,12 @@ hours({Hour,Min,Seconds}) ->
 %%% Converts an integer to a string	    
 atoi(Num) ->
     lists:flatten(io_lib:format("~p", [Num])).
+    
+    
+%% TEST CASES
+
+%%dirDoc_test() ->
+%%	?assertEqual("<html><head><title>Index of hej</title></head><body><h1>Index of hej</h1><hr><hr></body></html>", dirDoc([], [{path, "hej"},{host, ""}])).
+	
+	
+	
