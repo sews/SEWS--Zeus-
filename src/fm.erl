@@ -4,6 +4,8 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
+%% WEB ROOT FOR SEWS (usually /var/www)
+-define(WWW_ROOT, "/home").
 
 %%	DATATYPES
 %%
@@ -62,7 +64,8 @@ getFileInfo(FileName) ->
 %%		If Directory does not exist, {error, enoent} is returned. If Directory is a file {error, eisfile} is returned.
 
 
-dirHandler(Dir) ->
+dirHandler(WebDir) ->
+	Dir = ?WWW_ROOT ++ WebDir,
 	case filelib:is_file(Dir) of	%% if Dir exists
 		true ->
 			case filelib:is_dir(Dir) of	%% if Dir is a directory
@@ -136,7 +139,8 @@ uploadFile (FileName, FileContents) ->
 %%  Use FileHandle in all file information functions in this module.
 %%
 
-getFile(Path) -> 
+getFile(WebPath) -> 
+	Path = ?WWW_ROOT ++ WebPath,
     IsDir = filelib:is_dir(Path),
     IsFile = filelib:is_file(Path),
     if
