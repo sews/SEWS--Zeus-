@@ -2,7 +2,6 @@
 -export([start/0,listen/1]).
 
 -define(TCP_OPTIONS, [binary, {packet, 0}, {active, false}, {reuseaddr, true}]).
-
 -define(DEFAULT_PORT, 8080).
 
 %%EXTERNAL FUNCTIONS:
@@ -32,13 +31,15 @@ handleMultiPart(Socket, Boundary, File) ->
 				0 ->
 					handleMultiPart(Socket, Boundary, File ++ String);
 				Num ->
-					Substr = string:sub_string(String, 1, length(String) - Num),
-					handleMultiPart(Socket, Boundary, File ++ Substr)
-			end
-		{error,  ->
-			eror
-	end,
-	timeout.
+					File ++ string:sub_string(String, 1, length(String) - Num)
+			end;
+		{error, etimedout} ->
+			hej;
+		{error, etime} ->
+			hej;
+		{error, Reason} ->
+			{error, Reason}
+	end.
 
 
 handler(Socket) ->
@@ -50,20 +51,31 @@ handler(Socket) ->
 				{get, _} -> 
 					get:handler(Parsed);
 				{post, P} -> 
-					MegaParsed = case lists:keysearch(part, 1, P) of
-						{value, {part, continue}} ->
-							handleMultiPart(Socket, P, Boundary);
+					File = case lists:keysearch(file, 1, P) of
+						{value, {file, F}} ->
+							F;
 						false ->
-							fack
-					end, 
-					case post:handler(MegaParsed) of
-
+							error_mod:handler(enoent)
+					end,
+					Boundary = case lists:keysearch(boundary, 1, P) of
+						{value, {boundary, B}} ->
+							B;
+						false ->
+							error_mod:handler(enoent)
+					end,
+					case lists:keysearch(part, 1, P) of
+						{value, {part, multipart}} ->
+							MegaFile = handleMultiPart(Socket, Boundary, File),
+							MegaParsed = lists:keyreplace(file, 1, Parsed, {file, MegaFile}),
+							post:handler(MegaParsed);
+						{value, {part, single}} ->
+							post:handler(Parsed)
+					end;
 				{error, Reason} ->
-					{error_eval, Bin} = error_mod:handler(Reason),
-					Bin
+					error_mod:handler(Reason)
 			end;
 		{error, closed} ->
-		        ok %% TODO: Fixa errorhantering här
+			error_mod:handler(socket)
     end,
     io:format("Answer: ~n~p~n",[Outdata]),
     gen_tcp:send(Socket, Outdata),
