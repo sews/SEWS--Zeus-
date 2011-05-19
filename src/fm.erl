@@ -22,12 +22,16 @@
 
 getContentType(FileName) ->
 	case string:sub_word(FileName, 2, $.) of
-		"jpg" ->
+		"jpg"	->
 			"image/jpeg";
-		"txt" ->
+		"txt"	->
 			"text/plain";
-		"html" ->
+		"html"	->
 			"text/html";
+		"htm"	->
+			"text/html";
+		"pdf"	->
+			"application/pdf";
 		_ ->
 			"application/octet-stream"
 	end.
