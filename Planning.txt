@@ -1,58 +1,8 @@
 ﻿@todo
 
+*Dynamisk skripting
+*Cache ska kunna hantera olika algoritmer
+*Benchmark
 
 Tasks
-* Clean shit
-* POST
-* Process supervision
-* Cache in ETS
-
-
-Clean Shit:
-        Clean code
-                tags:          spec
-                        doc
-                        
-        Rewrite “ugly” code
-
-
-        Remove any “dicks” in code
-
-	fm - dennis
-	get - Daniel
-					sewsparser -
-	sewsmain - alex
-	error_mod - Per
-	gen_html - Jonathan
- 
-POST:
-        Dennis, Jonathan
-
-
-Process Supervision(PS):
-        Daniel, Alex
-
-
-Cache:
-        Johannes, Per
-        LRU?
-
-
-Todo:
-        Hotlinking
-
-
-PLANNING
-
-
-Tomorrow(13/5 - 11):
-		  Assert size of POST/PS/Cache
-
-
-to Wednesday(18/5 - 11):
-        All modules done
-
-
-Thursday through Friday(19 - 20/5 - 11):
-        Integration
-		  Prep for presentation
+*Implement real HEADERS!!11!!1!
