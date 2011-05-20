@@ -1,10 +1,5 @@
-%%% File    : cache.erl
 %% @author Group 6
-%% @doc A ETS-cache created for implementation in SEWS 
-%% @version 0.1
-%% created may 16 ,2001
-
-
+%% @doc A cache module
 
 
 -module(cache).
@@ -24,8 +19,7 @@ start()->
     ets:new(etstab,?ETS_OPTIONS),
     ets:insert(etstab,{etslist,[]}).  %% Help for LRU Implementation Counting
 
-%% read(Path)
-%% @spec string() -> binary()
+%% read()
 %% @doc Convert the given Path to Binary code. Side_effects: Store, Get or restore the given Path in the ETS table created from start().
 
 read(Path) ->
@@ -73,7 +67,6 @@ read(Path) ->
 	    {error,enoent}
     end.
 %% lru(Path)
-%%@spec string() -> ok | {error,Reason}
 %%@doc Handle the implementation of LRU-alogrithm, by add and delete Paths in a LRU-list under the name etslist in etstable.
 
 

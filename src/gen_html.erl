@@ -1,6 +1,4 @@
-%% @version 0.2
 %% @doc A module made for generating html code
-%% @since 12.05.11
 
 -module(gen_html).
 %-export([dirDoc/2]).

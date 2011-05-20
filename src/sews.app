@@ -1,0 +1,1 @@
+{application, sews, 	[{description, "SEWS Erlang Web Server"},	{vsn, "1"},	{modules, [cache, fm, main, get, post, error_mod, gen_html, parser]},	{registered, [sews]},	{mod, {sews_app,[]}}	]}.

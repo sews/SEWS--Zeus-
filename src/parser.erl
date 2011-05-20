@@ -9,10 +9,7 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
-%% @author Grupp 6
 %% @doc The Sews Parser: Parses the requests to a format suitable to erlang.  
-%% @version 0.1
-%% @since 19.05.11
 
 %% For testing purposes only
 string()->
@@ -125,9 +122,7 @@ parseGET([[H|InnerTail]|MainTail],ParsedList) ->
     end.
 
 %% parseFile(TheList::list)
-%% @spec TheList::list -> TheList::list
 %% @doc Returns a copy of list with the last two elements deleted
-%% @since 19.05.11
 
 parseFile ([A, B], Boundary, Acc) -> 
         Mahboy = string:strip(B, left, $-),
@@ -155,7 +150,6 @@ pOSTProcessing([{Atom, Value} | Rest]) ->
 	end.
 
 %% parsePOSTAux(String::list, Tuple::list)
-%% @spec (String::list, Tuple:list) -> (Tuple::list)
 %% @doc Parse out the keywords and the relevant data from the keywords
 %% @since 19.05.11
 
