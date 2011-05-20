@@ -1,8 +1,0 @@
-﻿@todo
-
-*Dynamisk skripting
-*Cache ska kunna hantera olika algoritmer
-*Benchmark
-
-Tasks
-*Implement real HEADERS!!11!!1!

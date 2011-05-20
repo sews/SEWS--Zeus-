@@ -1,12 +1,10 @@
 SEWS (Zeus) - Simple Erlang Web Server
 
-Saker som bör kollas upp:
- * Eunit
- * Edoc
- * Supervision Trees
- * Parser, finns det en färdig lösning?
- * Filhantering
+﻿@todo
 
-Alla måste även kunna lite grundläggande Git-administration, så att alla 
-kan bidra med kod. Ni kan börja med att spana in crashcoursen på 
-http://help.github.com/
+*Dynamisk skripting
+*Cache ska kunna hantera olika algoritmer
+*Benchmark
+
+Tasks
+*Implement real HEADERS!!11!!1!
