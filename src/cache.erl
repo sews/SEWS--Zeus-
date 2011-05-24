@@ -15,17 +15,36 @@
 %% @spec start() -> etstable
 %% @doc creates a new etstable with the name "etstab". ETS_OPTIONS pre defined.
 
-start()->
-    ets:new(etstab,?ETS_OPTIONS),
-    ets:insert(etstab,{etslist,[]}).  %% Help for LRU Implementation Counting
+max_cache_size() ->
+    ?MAX_CACHE_SIZE.
 
+max_file_size() ->
+    ?MAX_FILE_SIZE.
+
+start() ->
+    start(etstab,fun(X,Y) -> cache_kf:lru(X,Y) end,?MAX_CACHE_SIZE,?MAX_FILE_SIZE).
+
+start(Name)->
+    start(Name,fun(X,Y) -> cache_kf:lru(X,Y) end,?MAX_CACHE_SIZE,?MAX_FILE_SIZE).
+
+start(Name,Fun,MaxCacheSize,MaxFileSize) -> 
+    ets:new(Name,?ETS_OPTIONS),
+    ets:insert(Name,{metadata,[{max_cache_size,MaxCacheSize+1}, {killfun,Fun}, {max_file_size,MaxFileSize}, {etslist,[]}]}).
+    
+
+startRandom() ->
+     cache:start(etsrandom,fun(X,Y) -> cache_kf:killOneRandom(X,Y) end,?MAX_CACHE_SIZE, ?MAX_FILE_SIZE).
 %% read()
 %% @doc Convert the given Path to Binary code. Side_effects: Store, Get or restore the given Path in the ETS table created from start().
-
 read(Path) ->
+    read(Path, etstab).
+
+read(Path, Name) ->
+    MetaList = ets:lookup_element(Name,metadata,2),
+    {value,{killfun,Fun}} = lists:keysearch(killfun,1,MetaList),
     IsDir = filelib:is_dir(Path),
     IsFile = filelib:is_file(Path),
-    if
+    if  
 	IsDir ->
 	    {error,eisdir};
 	IsFile ->
@@ -35,27 +54,28 @@ read(Path) ->
 		{ok, FileInfo} ->
 		    Date = element(6,FileInfo),
 		    Size = element(2,FileInfo),
+		    {value,{max_file_size,MaxFileSize}} = lists:keysearch(max_file_size,1,MetaList),
 		    if
-			Size < ?MAX_FILE_SIZE -> 
-			    case ets:member(etstab,Path) of
+			Size < MaxFileSize -> 
+			    case ets:member(Name,Path) of
 				true ->
-				    lru(Path),
-				    EtsDate = ets:lookup_element(etstab,Path,2),
+				    Fun(Path,Name),  %% lru(Path)
+				    EtsDate = ets:lookup_element(Name,Path,2),
 				    if
 					EtsDate == Date ->
-					    io:format("Up to date"),
-					    ets:lookup_element(etstab,Path,3);
+					    io:format("Were up to date"),
+					    ets:lookup_element(Name,Path,3);
 					true ->
 					    {ok, Bin} = file:read_file(Path),
-					    ets:insert(etstab,{Path,Date,Bin}),
-					    io:format("DATE EXPIRED"),			     
+					    ets:insert(Name,{Path,Date,Bin}),
+					    io:format("Change since last read, updated"),	   		     
 					    Bin
 				    end;
 				_ ->
-				    lru(Path),
+				    Fun(Path,Name), %% lru(Path)
 				    {ok, Bin} = file:read_file(Path),
-				    ets:insert(etstab,{Path,Date,Bin}),
-				    io:format("Not in"),
+				    ets:insert(Name,{Path,Date,Bin}),
+				    io:format("Were not in table, now inserted"),
 				    Bin
 			    end;
 			true -> 
@@ -68,42 +88,6 @@ read(Path) ->
     end.
 %% lru(Path)
 %%@doc Handle the implementation of LRU-alogrithm, by add and delete Paths in a LRU-list under the name etslist in etstable.
-
-
-lru(Path) ->
-    EtsLRU = ets:lookup_element(etstab,etslist,2),
-    case ets:info(etstab) of
-	{error, Reason} ->
-	    {error,Reason};
-	InfoList ->
-	    case lists:keysearch(size,1,InfoList) of
-		{value,{size,EtsSize}} ->
-		    if 
-			EtsSize < ?MAX_CACHE_SIZE ->
-			    case lists:keydelete(Path,1,EtsLRU) of
-				false ->
-				    ets:insert(etstab,{etslist,[{Path}|EtsLRU]});
-				NewLRUList -> 
-				    ets:insert(etstab,{etslist,[{Path}|NewLRUList]})
-			    end;
-			true ->
-			    case lists:keydelete(Path,1,EtsLRU) of
-				false -> 
-				    {LastPath} = lists:last(EtsLRU),
-				    NewLRUList = lists:keydelete(LastPath,1,EtsLRU),
-				    ets:delete(etstab, LastPath),
-				    ets:insert(etstab,{etslist,[{Path}|NewLRUList]});
-				NewLRUList ->
-				    ets:insert(etstab,{etslist,[{Path}|NewLRUList]})
-			    end
-		    end;
-		false ->
-		    error	     
-	    end
-    end.
-
-
-
 
 
 
