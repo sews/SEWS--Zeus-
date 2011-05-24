@@ -79,8 +79,8 @@ prepOSTProcessing (Parsed, Socket) ->
 					end;
 				single ->
 					post:handler(Parsed);
-				{error, _} ->	%% not gonna happen
-					error_mod:handler(enoent)
+				E ->	%% not gonna happen
+					E
 			end
 	end.
 
@@ -96,15 +96,13 @@ handler(Socket) ->
 				{post, _} -> 
 					prepOSTProcessing(Parsed, Socket);
 				{error, Reason} ->
-					{error, Reason};
-			    {error_eval, Bin} ->
-				    Bin
+					{error, Reason}
 			end;
 		E ->
 			E
     end,
     Outdata = case Data of 
-    	{error_eval, B} ->
+    	{error_eval, B} ->	%% should not happen anymore
     		B;
     	{error, R} ->
     		{error_eval, B} = error_mod:handler(R),
