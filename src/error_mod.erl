@@ -1,8 +1,9 @@
+%% @version 0.1
+
 -module(error_mod).
 -export([handler/1]).
-%% @version 0.1
 %% handler(Reason)
-%% @spec atom -> string() 
+%% @spec (Reason::atom) -> string
 %% @doc Handle a error Reason and return the right error message for the given error.
 handler(Reason) ->
 	{error_eval, list_to_binary("<html><head><title>Error</title></head><body>" ++ 
