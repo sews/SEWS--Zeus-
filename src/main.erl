@@ -74,7 +74,7 @@ prepOSTProcessing (Parsed, Socket) ->
 					end;
 				single ->
 					post:handler(Parsed);
-				{error, Reason} ->	%% not gonna happen
+				{error, _} ->	%% not gonna happen
 					error_mod:handler(enoent)
 			end
 	end.

@@ -8,9 +8,10 @@
 
 new() -> %%Returns a new key-value store.
     [].
-
-size(KV) -> %%Returns the number of key-value pairs in the key-value store KV.
-    length(KV).
+    
+%% @deprecated
+%% size(KV) -> %%Returns the number of key-value pairs in the key-value store KV.
+%%    length(KV).
 
 add(KV, Key, Value) -> %%Add the Key together with Value to key-value store KV.
     case (lists:keysearch(Key, 1, KV)) of
