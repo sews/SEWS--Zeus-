@@ -8,10 +8,12 @@ CC = erlc -W
 ERL = erl
 
 # Default testing options
-TESTOP = $(ERL) -noshell -s
+TESTOP = $(ERL) -s
 
 # Beam file location
 EBIN = ebin/
+
+GOTO = cd $(EBIN)
 
 .PHONY: run build test clean rebuild doc docs
 
@@ -27,7 +29,7 @@ build:
 
 # Test
 run: build
-	$(TESTOP) sewsmain start 8888
+	$(GOTO); $(TESTOP) main
 
 # Remove all .beam files discarding errors
 clean:
