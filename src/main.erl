@@ -25,16 +25,13 @@ accept(LSocket) ->
 
         
 handleMultiPart(Socket, Boundary, File) ->
-	case gen_tcp:recv(Socket, 0, 3000) of
+	case gen_tcp:recv(Socket, 0, 3000) of		%% receive socket data and forward it to the parser
 		{ok, Indata} ->
-			String = binary_to_list(Indata),
-			MegaString = File++String,
-			case string:rstr(MegaString, Boundary) of
-				0 ->
-					handleMultiPart(Socket, Boundary, MegaString);
-				_ ->
-				    Num = string:rstr(MegaString,"\r\n-"),
-				    string:sub_string(MegaString, 1, Num-1)
+			case parser:parseMultiPart(binary_to_list(Indata), Boundary, File) of
+				{continue, Part} ->
+					handleMultiPart(Socket, Boundary, Part);
+				{done, Part} ->
+					Part
 			end;
 		E ->
 			E

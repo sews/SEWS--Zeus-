@@ -34,6 +34,16 @@ stringPOST()->
 %% S-E: None 
 %% Ex: parser:parse("GET /"). -> {get,[{path,"/index.html"}]}
 %% @since 19.05.11
+
+parseMultiPart(String, Boundary, File) ->
+	MegaString = File++String,
+	case string:rstr(MegaString, Boundary) of
+		0 ->
+			{continue, MegaString};
+		_ ->
+			Num = string:rstr(MegaString,"\r\n-"),
+			{done, string:sub_string(MegaString, 1, Num-1)}
+	end.
     
 parse(Input)->
     %%L = token(Input, $\n, [], []),
