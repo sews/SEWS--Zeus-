@@ -41,8 +41,8 @@ handleMultiPart(Socket, Boundary, File) ->
 prepOSTProcessing (Parsed, Socket) ->
 	{post, P} = Parsed,
 	Part = case lists:keysearch(path, 1, P) of 
-    	{value, {part, Part}} ->
-		   	Part;
+    	{value, {part, P}} ->
+		   	P;
 	    false ->
 			{error, enoent}
 	end,
@@ -91,7 +91,7 @@ handler(Socket) ->
 				{post, _} -> 
 					prepOSTProcessing(Parsed, Socket);
 				{error, Reason} ->
-					{error, Reason}
+					{error, Reason};
 			    {error_eval, Bin} ->
 				    Bin
 			end;

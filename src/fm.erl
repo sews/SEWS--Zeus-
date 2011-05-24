@@ -43,7 +43,7 @@ getContentType(FileName) ->
 %% @spec (FileName::string()) -> String
 %% @doc	Returns a string containing html char-set for the supplied filename
 	
-getCharset (FileName) ->
+getCharset (_) ->
 	"UTF-8".
 	
 	
