@@ -63,8 +63,8 @@ prepOSTProcessing (Parsed, Socket) ->
 		Boundary 	== {error, enoent} ->
 			{error, enoent};
 		true ->
-			case lists:keysearch(part, 1, P) of
-				{value, {part, multipart}} ->
+			case Part of
+				multipart ->
 					case handleMultiPart(Socket, Boundary, File) of
 						{error, Reason} ->
 							error_mod:handler(Reason);
@@ -72,7 +72,7 @@ prepOSTProcessing (Parsed, Socket) ->
 							MegaParsed = lists:keyreplace(file, 1, P, {file, MegaFile}),
 							post:handler({post, MegaParsed})
 					end;
-				{value, {part, single}} ->
+				single ->
 					post:handler(Parsed);
 				false ->	%% not gonna happen
 					error_mod:handler(enoent)

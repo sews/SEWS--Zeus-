@@ -53,16 +53,9 @@ handlerAUX(HList) ->
 		false ->
 			{error, enoent}
 	end,
-	Boundary = case lists:keysearch(boundary, 1, HList) of 
-    	{value, {boundary, B}} ->
-		   	B;
-	    false ->
-			{error, enoent}
-	end,
 	if 	FileName 		== {error, enoent};	%% error handling
 		Path 			== {error, enoent};
-		FileContents 	== {error, enoent};
-		Boundary 		== {error, enoent} ->
+		FileContents 	== {error, enoent} ->
 			{error, enoent};
 		true ->
 			case fm:uploadFile(Path ++ FileName, FileContents) of
