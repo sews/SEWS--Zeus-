@@ -127,7 +127,7 @@ fixPath (Path) ->
 
 
 uploadFile (WebPath, FileContents) ->
-        FileName = ?WWW_ROOT ++ WebPath,
+    FileName = ?WWW_ROOT ++ WebPath,
 	case file:write_file(FileName, list_to_binary(FileContents)) of
 		ok ->
 			ok;
@@ -219,10 +219,10 @@ getInfoAll_test() ->
 getContents_test() ->
 	?assertEqual("hej jag ar en strang ur en fil", getContents({"hej jag ar en strang ur en fil", []})).
 	
-fixPath_test() ->
-	[?assertEqual("/home/", fixPath("home")),
-	?assertEqual("/home/", fixPath("/home/")),
-	?assertEqual("/home/", fixPath("/home"))].
+%%fixPath_test() ->
+%%	[?assertEqual("/home/", fixPath("home")),
+%%	?assertEqual("/home/", fixPath("/home/")),
+%%	?assertEqual("/home/", fixPath("/home"))].
 
 
 

@@ -249,7 +249,7 @@ replaceHtml_test() ->
     ?assertEqual("  a s d   ", replaceHtmlSpace("%20%20a%20s%20d%20%20%20")).
 
 parseFile_test() ->
-    ?assertEqual({no, [a,b,c,d]}, parseFile([a,b,c,d], "qweqwe", [])).
+    ?assertEqual({no, ["abcd", "lol"]}, parseFile(["abcd", "lol"], "qweqwe", [])).
 
 token_test() ->
     ?assertEqual(["alex", "on", "big", "", "horse"], token("alex\non\nbig\n\nhorse", $\n, [], [])). 
