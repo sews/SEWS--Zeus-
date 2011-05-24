@@ -81,7 +81,7 @@ dirDoc(DirList, HList)->
     dirDocAux(DirList, Path, dirlist, []).
     
     
-postHTML (Dir, HList, Path) -> dirDocAux (Dir, Path, upload, []).
+postHTML (Dir, _, Path) -> dirDocAux (Dir, Path, upload, []).
 
 
 %% serverHeaders(FileAtom,Path) ->
