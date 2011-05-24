@@ -10,7 +10,7 @@
 %%Post: A pid to the listening process
 %%S-E: Starts up the Sews server, listening on the given port
 start()->
-    cache:start(),
+    cache:start(etstab),  %% FIX NAME ,START FROM COMMAND.
     spawn(main,listen,[?DEFAULT_PORT]). 
 
 %%INTERNAL FUNCTIONS:

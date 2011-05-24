@@ -22,7 +22,7 @@ max_file_size() ->
     ?MAX_FILE_SIZE.
 
 start() ->
-    start(etstab,fun(X,Y) -> cache_kf:lru(X,Y) end,?MAX_CACHE_SIZE,?MAX_FILE_SIZE).
+    start(etstab ,fun(X,Y) -> cache_kf:lru(X,Y) end,?MAX_CACHE_SIZE,?MAX_FILE_SIZE).
 
 start(Name)->
     start(Name,fun(X,Y) -> cache_kf:lru(X,Y) end,?MAX_CACHE_SIZE,?MAX_FILE_SIZE).
