@@ -27,7 +27,8 @@ build:
 %.erl: 
 	$(CC) $(SRC)$*.erl
 
-# Test
+# KINDA WORKS
+# ERROR AT 5
 run: build
 	$(GOTO); $(TESTOP) main
 
