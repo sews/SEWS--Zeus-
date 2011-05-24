@@ -40,29 +40,43 @@ handleMultiPart(Socket, Boundary, File) ->
 	
 prepOSTProcessing (Parsed, Socket) ->
 	{post, P} = Parsed,
-	case lists:keysearch(file, 1, P) of
-		{value, {file, File}} ->
-			case lists:keysearch(boundary, 1, P) of
-				{value, {boundary, Boundary}} ->
-					case lists:keysearch(part, 1, P) of
-						{value, {part, multipart}} ->
-							case handleMultiPart(Socket, Boundary, File) of
-								{error, Reason} ->
-									error_mod:handler(Reason);
-								MegaFile ->
-									MegaParsed = lists:keyreplace(file, 1, P, {file, MegaFile}),
-									post:handler({post, MegaParsed})
-							end;
-						{value, {part, single}} ->
-							post:handler(Parsed);
-						false ->
-							error_mod:handler(enoent)
-					end;
-				false ->
-					error_mod:handler(enoent)
-			end;
+	Part = case lists:keysearch(path, 1, P) of 
+    	{value, {part, Part}} ->
+		   	Part;
+	    false ->
+			{error, enoent}
+	end,
+	File = case lists:keysearch(file, 1, P) of 
+		{value, {file, F}} ->
+			F;
 		false ->
-			error_mod:handler(enoent)
+			{error, enoent}
+	end,
+	Boundary = case lists:keysearch(boundary, 1, P) of 
+    	{value, {boundary, B}} ->
+		   	B;
+	    false ->
+			{error, enoent}
+	end,
+	if 	Part 		== {error, enoent};	%% handle errors
+		File 		== {error, enoent};
+		Boundary 	== {error, enoent} ->
+			{error, enoent};
+		true ->
+			case lists:keysearch(part, 1, P) of
+				{value, {part, multipart}} ->
+					case handleMultiPart(Socket, Boundary, File) of
+						{error, Reason} ->
+							error_mod:handler(Reason);
+						MegaFile ->
+							MegaParsed = lists:keyreplace(file, 1, P, {file, MegaFile}),
+							post:handler({post, MegaParsed})
+					end;
+				{value, {part, single}} ->
+					post:handler(Parsed);
+				false ->	%% not gonna happen
+					error_mod:handler(enoent)
+			end
 	end.
 
 
@@ -77,7 +91,7 @@ handler(Socket) ->
 				{post, _} -> 
 					prepOSTProcessing(Parsed, Socket);
 				{error, Reason} ->
-					error_mod:handler(Reason);
+					{error, Reason}
 			    {error_eval, Bin} ->
 				    Bin
 			end;

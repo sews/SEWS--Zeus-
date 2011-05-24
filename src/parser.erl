@@ -55,7 +55,7 @@ parse(Input)->
         			parseGET([Tail | MainTail], []);
         "POST" -> 	L = token(Input, $\n, [], []),
         			parsePOST(L, []);
-        _ -> 		error_mod:handler(faulty_request)
+        _ -> 		{error, faulty_request}
     end.
 
 %% //==================\\

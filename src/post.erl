@@ -59,25 +59,27 @@ handlerAUX(HList) ->
 	    false ->
 			{error, enoent}
 	end,
-	io:format(Path),
-	io:format("~n"),
-	io:format(FileName),
-	io:format("~n"),
-	%%io:format([FileContents]),
-	case fm:uploadFile(Path ++ FileName, FileContents) of
-		ok ->
-			case fm:dirHandler(Path) of
-				{ok, DirList} -> 
-					gen_html:postHTML (DirList, HList, Path);
+	if 	FileName 		== {error, enoent};	%% error handling
+		Path 			== {error, enoent};
+		FileContents 	== {error, enoent};
+		Boundary 		== {error, enoent} ->
+			{error, enoent};
+		true ->
+			case fm:uploadFile(Path ++ FileName, FileContents) of
+				ok ->
+					case fm:dirHandler(Path) of
+						{ok, DirList} -> 
+							gen_html:postHTML (DirList, HList, Path);
+						{error_eval, Bin} ->
+							Bin;
+						ErrorTuple ->
+							ErrorTuple
+					end;
 				{error_eval, Bin} ->
 					Bin;
 				ErrorTuple ->
 					ErrorTuple
-			end;
-		{error_eval, Bin} ->
-			Bin;
-		ErrorTuple ->
-			ErrorTuple
+			end
 	end.
 	    	
 	    

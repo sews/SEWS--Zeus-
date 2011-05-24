@@ -86,8 +86,8 @@ dirHandler(WebDir) ->
 								end
 							end,
 							{ok, lists:sort(DirSort, DirListStripped)};
-						{error, Reason} ->	%% enoent, eaccess
-							error_mod:handler(Reason)
+						Error ->
+							Error
 					end;
 				false ->	%% not gonna happen
 					{error, eisfile}
@@ -132,9 +132,9 @@ uploadFile (WebPath, FileContents) ->
 		ok ->
 			ok;
 		{error, eisdir} ->
-			error_mod:handler(enoname);
-		{error, Reason} ->
-			error_mod:handler(Reason)
+			{error, enoname};
+		Error ->
+			Error
 	end.
 
 %% @spec (FileName::string()) -> {ok,FileData, FileInfo} | {error, eisdir} | {error, enoent} | {error_eval, Bin}
@@ -186,7 +186,7 @@ getInfo({_, InfoList}, Info) ->
 		{value, {_, Value}} ->
 			Value;
 		false ->
-			false
+			{error, noinfo}
 	end.
 	
 	

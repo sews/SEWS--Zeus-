@@ -37,34 +37,30 @@ handler({_,_}) -> {error, notCorrectlyTagged}.
 
 handlerAUX(HList) -> 
     case lists:keysearch(path, 1, HList) of
-	{value, {path, Path}} ->
-	    case fm:getFile(Path) of
-			{ok, File_handle} -> 
-				list_to_binary(fm:getContents(File_handle));
-			{error, eisdir} ->
-				case fm:getFile(Path ++ "index.html") of
-					{ok, File_handle} -> %% 
-						list_to_binary(fm:getContents(File_handle));
-					{error, enoent} ->	
-						case fm:dirHandler(Path) of
-							{ok, DirList} -> 
-								gen_html:dirDoc(DirList, HList);
-							{error_eval, Bin} ->
-								Bin
-						end;
-					{error_eval, Bin} ->
-						Bin
-				end;
-			{error, Reason} ->
-				{error_eval, Bin} = error_mod:handler(Reason),
-				Bin;
-			{error_eval, Bin} ->
-				Bin
-		end;
-	false ->
-	    {error_eval, Bin} = error_mod:handler(nopath),
-	    Bin;
-	Any -> io:format("~n~p~n", [Any])
+		{value, {path, Path}} ->
+			case fm:getFile(Path) of
+				{ok, File_handle} -> 
+					list_to_binary(fm:getContents(File_handle));
+				{error, eisdir} ->
+					case fm:getFile(Path ++ "index.html") of
+						{ok, File_handle} -> %% 
+							list_to_binary(fm:getContents(File_handle));
+						{error, enoent} ->	
+							case fm:dirHandler(Path) of
+								{ok, DirList} -> 
+									gen_html:dirDoc(DirList, HList);
+								Error ->
+									Error
+							end;
+						Error ->
+							Error
+					end;
+				Error ->
+					Error
+			end;
+		false ->
+			{error, nopath};
+		Any -> io:format("~n~p~n", [Any])
     end.
 
 %% //============\\
