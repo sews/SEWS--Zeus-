@@ -142,8 +142,10 @@ parseFile ([H | Rest], Boundary, Acc) ->
 
 pOSTProcessing([]) -> [];
 pOSTProcessing([{Atom, Value} | Rest]) ->
-	case Value of
-		Value when is_list(Value) ->
+	case {Atom, Value} of
+		{file, V} ->
+			[{file, V} | pOSTProcessing(Rest)];
+		{Atom, Value} when is_list(Value) ->
 			[{Atom, lists:delete($\r, Value)} | pOSTProcessing(Rest)];
 		_ ->
 			[{Atom, Value} | pOSTProcessing(Rest)]

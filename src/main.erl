@@ -22,70 +22,81 @@ accept(LSocket) ->
     {ok, Socket} = gen_tcp:accept(LSocket),
     spawn(fun() -> handler(Socket) end),
     accept(LSocket).
-    
+
+        
 handleMultiPart(Socket, Boundary, File) ->
-    io:format("~nBoundary YEEAAAH: ~p~n", [Boundary]),
 	case gen_tcp:recv(Socket, 0, 3000) of
 		{ok, Indata} ->
 			String = binary_to_list(Indata),
-			io:format("~n~p~n~n", [Indata]),
-			case string:rstr(String, Boundary) of
+			MegaString = File++String,
+			case string:rstr(MegaString, Boundary) of
 				0 ->
-					handleMultiPart(Socket, Boundary, File ++ String);
+					handleMultiPart(Socket, Boundary, MegaString);
 				_ ->
-				    Num = string:rstr(String,"\r\n-"),
-					File ++ string:sub_string(String, 1, Num)
+				    Num = string:rstr(MegaString,"\r\n-"),
+				    string:sub_string(MegaString, 1, Num-1)
 			end;
-		{error, Reason} ->
-			{error, Reason}
+		E ->
+			E
+	end.
+	
+	
+prepOSTProcessing (Parsed, Socket) ->
+	{post, P} = Parsed,
+	case lists:keysearch(file, 1, P) of
+		{value, {file, File}} ->
+			case lists:keysearch(boundary, 1, P) of
+				{value, {boundary, Boundary}} ->
+					case lists:keysearch(part, 1, P) of
+						{value, {part, multipart}} ->
+							case handleMultiPart(Socket, Boundary, File) of
+								{error, Reason} ->
+									error_mod:handler(Reason);
+								MegaFile ->
+									MegaParsed = lists:keyreplace(file, 1, P, {file, MegaFile}),
+									post:handler({post, MegaParsed})
+							end;
+						{value, {part, single}} ->
+							post:handler(Parsed);
+						false ->
+							error_mod:handler(enoent)
+					end;
+				false ->
+					error_mod:handler(enoent)
+			end;
+		false ->
+			error_mod:handler(enoent)
 	end.
 
 
 handler(Socket) ->
-    Outdata = case gen_tcp:recv(Socket, 0) of
+    Data = case gen_tcp:recv(Socket, 0) of
         {ok, Indata} ->
 		    io:format("Request: ~n~p~n",[Indata]),
 			Parsed = parser:parse(binary_to_list(Indata)),
 			case Parsed of
 				{get, _} -> 
 					get:handler(Parsed);
-				{post, P} -> 
-					File = case lists:keysearch(file, 1, P) of
-						{value, {file, F}} ->
-							F;
-						false ->
-							error_mod:handler(enoent)
-					end,
-					Boundary = case lists:keysearch(boundary, 1, P) of
-						{value, {boundary, B}} ->
-							B;
-						false ->
-							error_mod:handler(enoent)
-					end,
-					case lists:keysearch(part, 1, P) of
-						{value, {part, multipart}} ->
-						    case handleMultiPart(Socket, Boundary, File) of
-							    {error, Reason} ->
-									error_mod:handler(Reason);
-							    MegaFile ->
-									MegaParsed = lists:keyreplace(file, 1, P, {file, MegaFile}),
-									post:handler({post, MegaParsed})
-							end;
-						{value, {part, single}} ->
-							post:handler(Parsed);
-					    false ->
-							error_mod:handler(enoent)
-					end;
+				{post, _} -> 
+					prepOSTProcessing(Parsed, Socket);
 				{error, Reason} ->
 					error_mod:handler(Reason);
 			    {error_eval, Bin} ->
 				    Bin
 			end;
-		{error, closed} ->
-			{LoL, Bin} = error_mod:handler(socket),
-		    Bin
+		E ->
+			E
     end,
-    io:format("Answer: ~n~p~n",[Outdata]),
+    Outdata = case Data of 
+    	{error_eval, B} ->
+    		B;
+    	{error, R} ->
+    		{error_eval, B} = error_mod:handler(R),
+    		B;
+    	Any ->
+    		Any
+    end,
+    %%io:format("Answer: ~n~p~n",[Outdata]),
     gen_tcp:send(Socket, Outdata),
     gen_tcp:close(Socket).
 	
