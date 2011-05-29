@@ -1,7 +1,6 @@
 %% @author Group 6
 %% @doc A cache module
 
-
 -module(cache).
 -compile(export_all).
 
@@ -12,7 +11,6 @@
 -define(MAX_CACHE_SIZE,51).
 
 %% start()
-%% @spec start() -> etstable
 %% @doc creates a new etstable with the name "etstab". ETS_OPTIONS pre defined.
 
 max_cache_size() ->
@@ -86,12 +84,6 @@ read(Path, Name) ->
 	true ->
 	    {error,enoent}
     end.
-%% lru(Path)
-%%@doc Handle the implementation of LRU-alogrithm, by add and delete Paths in a LRU-list under the name etslist in etstable.
-
-
-
-
 
 %% TEST CASES
 

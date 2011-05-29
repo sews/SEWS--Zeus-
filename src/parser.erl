@@ -26,7 +26,6 @@ stringPOST()->
 %% \\==================//	
 
 %% parse(Input::String)	
-%% @spec (Input::String) -> Tuple_list
 %% @doc Parser for the html requests.
 %%  Pre: A POST or GET request in the standard format
 %%  Post: A tuple {type_atom(), TupleList} where TupleList consists of tuples of the format {header_atom(), Data} or a tuple {error, Reason}
