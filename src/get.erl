@@ -40,7 +40,16 @@ handlerAUX(HList) ->
 		{value, {path, Path}} ->
 			case fm:getFile(Path) of
 				{ok, File_handle} -> 
+<<<<<<< HEAD
 					list_to_binary([gen_html:server200Headers(Path),fm:getContents(File_handle)]);
+=======
+				        case string:str(Path, ".esl") of 
+					    0 ->
+						list_to_binary(fm:getContents(File_handle));
+					    _ ->
+						list_to_binary(dynerl:match(fm:getContents(File_handle)))
+					end;
+>>>>>>> c669577b3b9973b797f9eede5c29f7551c647b43
 				{error, eisdir} ->
 					case fm:getFile(Path ++ "index.html") of
 						{ok, File_handle} -> %% 
