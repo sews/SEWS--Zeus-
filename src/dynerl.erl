@@ -14,31 +14,32 @@ match(String) ->
 	    true ->
 		case eval(string:substr(String, Start + 5, End - Start - 5)) of 
 		    {error, Reason} ->
-			io:format("~n~p~n", [String]),
+			%% io:format("~n~p~n", [String]),
 			String;
 		    Value ->
 			NewString = string:substr(String, 1, Start - 1) ++ integer_to_list(Value) ++ string:substr(String, End + 2),
-			io:format("~n~p~n", [NewString]),
+			%% io:format("~n~p~n", [NewString]),
 			NewString
 		end;
 	    _ ->
-		io:format("~n~p~n", [String]),
+		%% io:format("~n~p~n", [String]),
 		String
 	end.	
        		    
 eval(String) ->
     {ok,ErlTokens,_} = erl_scan:string(String),
-    io:format("ErlTokens are ~p~n",[ErlTokens]),
+    %% io:format("ErlTokens are ~p~n",[ErlTokens]),
     case erl_parse:parse_exprs(ErlTokens) of
-    	{ok,ErlAbsForm} -> io:format("ErlAbsForm are ~p~n",[ErlAbsForm]),
-	    	%Bindings=erl_eval:add_binding('A',20,erl_eval:new_bindings()),
-		    %NewBindings=erl_eval:add_binding('B',45,Bindings),
-		    %io:format("The bindings are ~p~n",[erl_eval:bindings(NewBindings)]),
-		    %io:format("Going into erl_eval:exprs~n",[]),
-		    {value,Value,_} = erl_eval:exprs(ErlAbsForm, erl_eval:new_bindings()),
-		    io:format("Value is ~p~n",[Value]),
-		    Value;
-		{error, Reason} -> String
+    	{ok,ErlAbsForm} -> 
+	    %% io:format("ErlAbsForm are ~p~n",[ErlAbsForm]),
+	    %Bindings=erl_eval:add_binding('A',20,erl_eval:new_bindings()),
+	    %NewBindings=erl_eval:add_binding('B',45,Bindings),
+	    %io:format("The bindings are ~p~n",[erl_eval:bindings(NewBindings)]),
+	    %io:format("Going into erl_eval:exprs~n",[]),
+	{value,Value,_} = erl_eval:exprs(ErlAbsForm, erl_eval:new_bindings()),
+	    %% io:format("Value is ~p~n",[Value]),
+	    Value;
+	{error, Reason} -> String
     end.
 
 f1() ->

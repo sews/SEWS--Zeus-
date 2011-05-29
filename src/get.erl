@@ -40,7 +40,12 @@ handlerAUX(HList) ->
 		{value, {path, Path}} ->
 			case fm:getFile(Path) of
 				{ok, File_handle} -> 
-					list_to_binary(fm:getContents(File_handle));
+				        case string:str(Path, ".esl") of 
+					    0 ->
+						list_to_binary(fm:getContents(File_handle));
+					    _ ->
+						list_to_binary(dynerl:match(fm:getContents(File_handle)))
+					end;
 				{error, eisdir} ->
 					case fm:getFile(Path ++ "index.html") of
 						{ok, File_handle} -> %% 
