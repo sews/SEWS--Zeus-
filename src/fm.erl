@@ -1,10 +1,6 @@
 
 -module(fm).
 -export([getFile/1, getContents/1, getContentType/1, getInfo/2, dirHandler/1, getInfoAll/1, fixPath/1, uploadFile/2]).
-<<<<<<< HEAD
-=======
-
->>>>>>> c669577b3b9973b797f9eede5c29f7551c647b43
 -include_lib("eunit/include/eunit.hrl").
 
 %% WEB ROOT FOR SEWS (usually /var/www)
@@ -227,7 +223,7 @@ getInfo({_, InfoList}, Info) ->
 
 getInfo_test() ->
     ?assertEqual("text/html", getInfo({[], [{contenttype, "text/html"}]}, contenttype)).
-
+ 
 getInfoAll_test() ->
     ?assertMatch([{contenttype, "text/html"}], getInfoAll({[], [{contenttype, "text/html"}]})).
 
