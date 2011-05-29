@@ -1,6 +1,6 @@
 
 -module(fm).
--export([getFile/1, getContentType/1, getInfo/2, dirHandler/1, getInfoAll/1, fixPath/1, uploadFile/2]).
+-export([getFile/1, getContents/1, getContentType/1, getInfo/2, dirHandler/1, getInfoAll/1, fixPath/1, uploadFile/2]).
 
 -include_lib("eunit/include/eunit.hrl").
 
