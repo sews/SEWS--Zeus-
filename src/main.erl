@@ -111,7 +111,7 @@ handler(Socket) ->
 		  Any ->
 		      Any
 	      end,
-    %%io:format("Answer: ~n~p~n",[Outdata]),
+    io:format("Answer: ~n~p~n",[Outdata]),
     gen_tcp:send(Socket, Outdata),
     gen_tcp:close(Socket).
 

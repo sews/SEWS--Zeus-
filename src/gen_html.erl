@@ -23,7 +23,7 @@
 %% @since 12.05.11
 
 dirDocAux(DirList, Path, Mode, []) ->
-    HTMLString = "<html><head><title>Index of " ++ Path ++ "</title></head><body>
+    HTMLString = gen200Headers() ++ "<html><head><title>Index of " ++ Path ++ "</title></head><body>
 
 	<table><tr><td><h1>Index of " ++ Path ++ "</h1><hr>",
 
@@ -83,20 +83,39 @@ dirDoc(DirList, HList)->
 
 postHTML (Dir, _, Path) -> dirDocAux (Dir, Path, upload, []).
 
+gen200Headers() ->
+    "HTTP/1.1 200 OK:\r\n" ++ "Content-Type: text/html" ++  "\r\nAccept-Ranges: bytes\r\nServer: Sews Server version 0.2\r\nDate: "++ dateFormatted(calendar:universal_time()) ++"\r\nConnection: close\r\n\n".
 
 server200Headers(Path) ->
-    {ok, FileInfo} = file:read_file_info(Path),
-    LastModTime = element(6,FileInfo),
-    Size = element(2,FileInfo),
-    "HTTP/1.1 200 OK:\r\n" ++ contentType(Path) ++ "\r\nLast-Modified: " ++ dateFormatted(LastModTime)  ++  "\r\nAccept-Ranges: bytes\r\nServer: Sews Server version 0.2\r\nDate: "++ dateFormatted(calendar:universal_time()) ++"\r\nConnection: close\r\nContent-Length:" ++ atoi(Size) ++ "\r\n\n".
+    FileInfo = 
+	case file:read_file_info("/home" ++Path) of
+	    {ok, Fileinfo} -> Fileinfo;
+	    _ -> nofile
+	end,
+    {LastModTime, Size} = 
+	case FileInfo of
+	    nofile -> {nofile,nofile};
+	    _ ->
+		{element(6,FileInfo),element(2,FileInfo)}
+	end,
+    "HTTP/1.1 200 OK:\r\n" ++ contentType(Path) ++ lastModified(LastModTime)  ++  "\r\nAccept-Ranges: bytes\r\nServer: Sews Server version 0.2\r\nDate: "++ dateFormatted(calendar:universal_time())++ contentLength(Size) ++"\r\nConnection: close\r\n\n".
 
 
 contentType(Path)->
     case fm:getContentType(Path) of
-	"" -> "";
+	"" -> "Content-Type: text/html";
 	Extension -> "Content-Type: " ++ Extension
     end.
-	    
+	
+contentLength(nofile) -> "";
+contentLength(Size) ->
+    "\r\nContent-Length:" ++ atoi(Size).
+    
+    
+lastModified(nofile)-> "";
+lastModified(Time) ->
+    "\r\nLast-Modified: " ++ dateFormatted(Time).
+    
 
 dateFormatted(Time) ->
     {{Year,Month,Day},{Hour,Min,Seconds}} = Time,

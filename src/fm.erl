@@ -1,7 +1,6 @@
 
 -module(fm).
--export([getFile/1, getContentType/1, getInfo/2, dirHandler/1, getInfoAll/1, fixPath/1, uploadFile/2]).
-
+-export([getFile/1, getContents/1, getContentType/1, getInfo/2, dirHandler/1, getInfoAll/1, fixPath/1, uploadFile/2]).
 -include_lib("eunit/include/eunit.hrl").
 
 %% WEB ROOT FOR SEWS (usually /var/www)
@@ -23,8 +22,15 @@
 %% @doc	Returns a string containing html content-type for the supplied filename
 
 getContentType(Path) ->
-    FileExtension = string:sub_string(Path,string:rchr(Path,$.)),
+    DotIndex = 
+	case string:rchr(Path,$.) of
+	    0 -> 1;
+	    Num -> Num
+	end,
+    FileExtension = string:sub_string(Path,DotIndex),
     case FileExtension of
+	".ico" -> 
+	    "image/ico";
 	".jpg"	->
 	    "image/jpeg";
 	".gif"	->

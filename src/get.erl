@@ -40,7 +40,7 @@ handlerAUX(HList) ->
 		{value, {path, Path}} ->
 			case fm:getFile(Path) of
 				{ok, File_handle} -> 
-					list_to_binary(fm:getContents(File_handle));
+					list_to_binary([gen_html:server200Headers(Path),fm:getContents(File_handle)]);
 				{error, eisdir} ->
 					case fm:getFile(Path ++ "index.html") of
 						{ok, File_handle} -> %% 
