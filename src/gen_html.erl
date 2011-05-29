@@ -1,7 +1,7 @@
 %% @doc A module made for generating html code
 
 -module(gen_html).
-%-export([dirDoc/2]).
+%%%-export([dirDoc/2]).
 -compile(export_all).
 
 -include_lib("eunit/include/eunit.hrl").
@@ -23,43 +23,43 @@
 %% @since 12.05.11
 
 dirDocAux(DirList, Path, Mode, []) ->
-	HTMLString = "<html><head><title>Index of " ++ Path ++ "</title></head><body>
-	
+    HTMLString = "<html><head><title>Index of " ++ Path ++ "</title></head><body>
+
 	<table><tr><td><h1>Index of " ++ Path ++ "</h1><hr>",
-	
+
 	case Mode of
-		dirlist ->
+	    dirlist ->
     		dirDocAux(DirList, Path, Mode, HTMLString);
-    	upload ->
+	    upload ->
     		dirDocAux(DirList, Path, Mode, HTMLString ++ "<h2>File successfully uploaded :D</h2><hr>")
-    end;
+	end;
 dirDocAux([File|FileTail], Path, Mode, Html) ->
     IsDir = filelib:is_dir(?WWW_ROOT ++ Path ++ File),
     case IsDir of
-	 	true -> %% File refers to a directory
-	    	dirDocAux(FileTail, Path, Mode, Html ++ "[Dir] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />");
-		false -> %% File refers to a file
-	    	dirDocAux(FileTail, Path, Mode, Html ++ "[File] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />")
+	true -> %% File refers to a directory
+	    dirDocAux(FileTail, Path, Mode, Html ++ "[Dir] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />");
+	false -> %% File refers to a file
+	    dirDocAux(FileTail, Path, Mode, Html ++ "[File] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />")
     end;
 dirDocAux([], _, _, Html) ->
     Html ++ "</td><td>
-    
+
     	<FORM action=\"\" 
     		  enctype=\"multipart/form-data\"
 			  method=\"post\">
 			<P>
-				<INPUT 	type=\"file\"  
+	<INPUT 	type=\"file\"  
           				name=\"fileselect\"
           				value=\"defaultfile\">
         	<P>
 
-        		<INPUT 	type=\"submit\" 
+	<INPUT 	type=\"submit\" 
         				value=\"Upload\">
 		</FORM>
 
-    
-    </td></tr></table><hr></body></html>".
-    
+
+	</td></tr></table><hr></body></html>".
+
 %% //==================\\
 %% ||EXPORTED FUNCTIONS||
 %% \\==================//
@@ -71,33 +71,34 @@ dirDocAux([], _, _, Html) ->
 
 dirDoc(DirList, HList)-> 
 
-%% Get path so requested file from HList
-    Path = case lists:keysearch(path, 1, HList) of 
-    	{value,{path, P}} ->
-		   	P;
-	       	false ->
-		   	error_mod:handler(nopath)
-	   	end,
-    dirDocAux(DirList, Path, dirlist, []).
-    
-    
+    %% Get path so requested file from HList
+				  Path = case lists:keysearch(path, 1, HList) of 
+					     {value,{path, P}} ->
+						 P;
+					     false ->
+						 error_mod:handler(nopath)
+					 end,
+				  dirDocAux(DirList, Path, dirlist, []).
+
+
 postHTML (Dir, _, Path) -> dirDocAux (Dir, Path, upload, []).
 
 
-%% serverHeaders(FileAtom,Path) ->
-%%     {ok, FileInfo} = file:read_file_info(Path),
-%%     LastModTime = element(6,FileInfo),
-%%     "HTTP/1.1 200 OK:
-%% Content-Type: "++ contType() ++ "
-%% Last-Modified: " ++ dateHeader(LastModTime)  ++  "
-%% Accept-Ranges: bytes
-%% Server: Sews Server version 0.2
-%% Date: "++ dateHeader(calendar:universal_time()) ++"
-%% Connection: keep-alive
-%% Content-Length:" ++ contLength() ++ "\n\n".
+server200Headers(Path) ->
+    {ok, FileInfo} = file:read_file_info(Path),
+    LastModTime = element(6,FileInfo),
+    Size = element(2,FileInfo),
+    "HTTP/1.1 200 OK:\r\n" ++ contentType(Path) ++ "\r\nLast-Modified: " ++ dateFormatted(LastModTime)  ++  "\r\nAccept-Ranges: bytes\r\nServer: Sews Server version 0.2\r\nDate: "++ dateFormatted(calendar:universal_time()) ++"\r\nConnection: close\r\nContent-Length:" ++ atoi(Size) ++ "\r\n\n".
 
-    
-dateHeader(Time) ->
+
+contentType(Path)->
+    case fm:getContentType(Path) of
+	"" -> "";
+	Extension -> "Content-Type: " ++ Extension
+    end.
+	    
+
+dateFormatted(Time) ->
     {{Year,Month,Day},{Hour,Min,Seconds}} = Time,
     weekday({Year,Month,Day}) ++ ", " ++ atoi(Day)++ " " ++ month(Month) ++ " " ++ atoi(Year) ++ " " ++ hours({Hour,Min,Seconds}) ++ " GMT".
 
@@ -130,12 +131,12 @@ month(Month) ->
 	12 -> "Dec";
 	_  -> error
     end.
-	    
+
 hours({Hour,Min,Seconds}) ->
     FormHours = if
 		    Hour < 10 -> "0" ++ atoi(Hour);
 		    true -> atoi(Hour)
-    end,
+		end,
     FormMin = if
 		  Min < 10 -> "0" ++ atoi(Min);
 		  true -> atoi(Min)
@@ -145,21 +146,21 @@ hours({Hour,Min,Seconds}) ->
 		  true -> atoi(Seconds)
 	      end,
     FormHours ++ ":" ++ FormMin ++ ":" ++ FormSec.
-			  
-    
-	    
-    
+
+
+
+
 
 
 %%% Converts an integer to a string	    
 atoi(Num) ->
     lists:flatten(io_lib:format("~p", [Num])).
-    
-    
+
+
 %% TEST CASES
 
 %%dirDoc_test() ->
 %%	?assertEqual("<html><head><title>Index of hej</title></head><body><h1>Index of hej</h1><hr><hr></body></html>", dirDoc([], [{path, "hej"},{host, ""}])).
-	
-	
-	
+
+
+
