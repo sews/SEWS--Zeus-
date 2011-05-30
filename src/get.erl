@@ -44,7 +44,7 @@ handlerAUX(HList) ->
 					    0 ->
 						list_to_binary([gen_html:server200Headers(Path),fm:getContents(File_handle)]);
 					    _ ->
-						list_to_binary([gen_html:server200Headers(Path),dynerl:match(fm:getContents(File_handle))])
+						list_to_binary([gen_html:gen200Headers(Path),dynerl:match(fm:getContents(File_handle))])
 					end;
 				{error, eisdir} ->
 					case fm:getFile(Path ++ "index.html") of
