@@ -1,6 +1,6 @@
 APP_NAME = SEWS Erlang Web Server
 SRC = src/
-DOCDIR = doc/
+DOCDIR = doc/html/
 
 # Default compiler and compiling options
 CC = erlc -W
@@ -15,7 +15,7 @@ EBIN = ebin/
 
 GOTO = cd $(EBIN)
 
-.PHONY: run build test clean rebuild doc docs
+.PHONY: run build test clean rebuild edoc
 
 # Runs when make is called without parameters
 all: build test
@@ -35,9 +35,12 @@ run: build
 # Remove all .beam files discarding errors
 clean:
 	@echo Removing all beams and dumps...
-	@rm -f $(SRC)*.beam $(SRC)*.dump
+	@rm -f $(SRC)*.beam $(SRC)*.dump $(SRC).#*
 	@rm -f *.beam *.dump
 	@rm -f $(EBIN)*.beam $(EBIN)*.dump
+	@echo Removing doc
+	@rm -f $(DOCDIR)*.html
+	(cd doc/html && find . -name "*" -a ! -name overview.edoc -exec rm -rf {} \;)
 
 # Removes all .beam files and compiles new
 rebuild: clean build
@@ -46,13 +49,7 @@ rebuild: clean build
 edoc:
 	@echo Generating $(APP_NAME) documentation from srcs
 	@erl -noshell -run edoc_run application "'$(APP_NAME)'" \
-	'"."' '[{def,{vsn,"$(VSN)"}}, {doc, "doc/"}, {files, "src/"}]'
-
-# Generates a single Edoc
-# For appfiles
-# docs: .erl
-#	erl -noshell -run edoc_run application "'$@.erl'"\
-#	'"."' '[{def,{vsn,"$(VSN)"}}]'
+	'"."' '[{def,{vsn,"$(VSN)"}}, {dir, "$(DOCDIR)"}, {files, "$(SRC)"}]'
 
 test: build
 	@echo Running eUnit...

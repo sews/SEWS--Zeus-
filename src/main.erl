@@ -13,7 +13,6 @@ start() ->
     start(?DEFAULT_PORT).
 
 start(Port)->
-    cache:start(etstab),  %% FIX NAME ,START FROM COMMAND.
     spawn(main,listen,[Port]). 
 
 start(Port,FunAtom)->
@@ -30,6 +29,7 @@ start(Port,FunAtom)->
 %%INTERNAL FUNCTIONS:
 listen(Port) ->
     {ok, LSocket} = gen_tcp:listen(Port, ?TCP_OPTIONS),
+    cache:start(etstab),
     accept(LSocket).
 
 accept(LSocket) ->
@@ -98,7 +98,7 @@ prepOSTProcessing (Parsed, Socket) ->
 handler(Socket) ->
     Data = case gen_tcp:recv(Socket, 0) of
 	       {ok, Indata} ->
-		   io:format("Request: ~n~p~n",[Indata]),
+		   %% io:format("Request: ~n~p~n",[Indata]),
 		   Parsed = parser:parse(binary_to_list(Indata)),
 		   case Parsed of
 		       {get, _} -> 
@@ -120,7 +120,7 @@ handler(Socket) ->
 		  Any ->
 		      Any
 	      end,
-    io:format("Answer: ~n~p~n",[Outdata]),
+    %% io:format("Answer: ~n~p~n",[Outdata]),
     gen_tcp:send(Socket, Outdata),
     gen_tcp:close(Socket).
 
