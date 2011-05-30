@@ -29,9 +29,6 @@ start(Name,Fun,MaxCacheSize,MaxFileSize) ->
     ets:new(Name,?ETS_OPTIONS),
     ets:insert(Name,{metadata,[{max_cache_size,MaxCacheSize+1}, {killfun,Fun}, {max_file_size,MaxFileSize}, {etslist,[]}]}).
     
-
-startRandom() ->
-     cache:start(etsrandom,fun(X,Y) -> cache_kf:killOneRandom(X,Y) end,?MAX_CACHE_SIZE, ?MAX_FILE_SIZE).
 %% read()
 %% @doc Convert the given Path to Binary code. Side_effects: Store, Get or restore the given Path in the ETS table created from start().
 read(Path) ->
@@ -42,7 +39,13 @@ read(Path, Name) ->
     {value,{killfun,Fun}} = lists:keysearch(killfun,1,MetaList),
     IsDir = filelib:is_dir(Path),
     IsFile = filelib:is_file(Path),
-    if  
+    IsDyn = 
+	case string:sub_string(Path,string:rchr(Path,$.)) of
+	    ".dyn" -> true;
+	    _ -> false
+	end,
+    if
+	IsDyn -> dynerl:match(binary_to_list(file:read_file(Path)));
 	IsDir ->
 	    {error,eisdir};
 	IsFile ->
