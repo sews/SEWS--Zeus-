@@ -83,8 +83,11 @@ dirDoc(DirList, HList)->
 
 postHTML (Dir, _, Path) -> dirDocAux (Dir, Path, upload, []).
 
+gen200eslHeaders() ->
+    "HTTP/1.0 200 OK:\r\n" ++ "Content-Type: text/html" ++  "\r\nAccept-Ranges: bytes\r\nServer: Sews Server version 0.2\r\nDate: "++ dateFormatted(calendar:universal_time()) ++"\r\nConnection: close\r\n\n".
+
 gen200Headers() ->
-    "HTTP/1.1 200 OK:\r\n" ++ "Content-Type: text/html" ++  "\r\nAccept-Ranges: bytes\r\nServer: Sews Server version 0.2\r\nDate: "++ dateFormatted(calendar:universal_time()) ++"\r\nConnection: close\r\n\n".
+    "HTTP/1.0 200 OK:\r\n" ++ "Content-Type: text/html" ++  "\r\nAccept-Ranges: bytes\r\nServer: Sews Server version 0.2\r\nDate: "++ dateFormatted(calendar:universal_time()) ++"\r\nConnection: close\r\n\n".
 
 server200Headers(Path) ->
     FileInfo = 

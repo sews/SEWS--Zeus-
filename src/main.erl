@@ -1,5 +1,5 @@
 -module(main).
--export([start/0, start/1, listen/1]).
+-export([start/0, start/1,start/2, listen/1]).
 
 -define(TCP_OPTIONS, [binary, {packet, 0}, {active, false}, {reuseaddr, true}]).
 -define(DEFAULT_PORT, 8080).
@@ -16,6 +16,15 @@ start(Port)->
     cache:start(etstab),  %% FIX NAME ,START FROM COMMAND.
     spawn(main,listen,[Port]). 
 
+start(Port,FunAtom)->
+    case FunAtom of
+	kor ->
+	    cache:start(etstab,fun cache_kf:killOneRandom/2,50,2000000),
+	    spawn(main,listen,[Port]);
+	lru ->
+	    cache:start(etstab,fun cache_kf:lru/2,50,2000000),
+	    spawn(main,listen,[Port])
+    end.
 
 
 %%INTERNAL FUNCTIONS:

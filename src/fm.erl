@@ -31,7 +31,7 @@ getContentType(Path) ->
     case FileExtension of
 	".ico" -> 
 	    "image/ico";
-	".jpg"	->
+	JPG when JPG == ".jpg";"jpeg";"jpg" ->
 	    "image/jpeg";
 	".gif"	->
 	    "image/gif";
@@ -43,10 +43,24 @@ getContentType(Path) ->
 	    "text/html";
 	".pdf"	->
 	    "application/pdf";
-	%% ".some_extension" ->
-	%%     "application/octet-stream";
+	".mp3" ->
+	    "audio/mpeg";
+	".bmp" ->
+	    "image/bmp";
+	".mov" ->
+	    "video/quicktime";
+	VIDEO when VIDEO == ".mpa";"mpe";"mpeg";"mpg";"mpv2"->
+	    "video/mpeg";
+	".wav"-> 		    
+	    "audio/x-wav";
+	".gz" ->
+	    "application/x-gzip";
+	 ".gtar"->
+	    "application/x-gtar";
+	".class" ->
+	    "application/octet-stream";		
 	_ ->
-	    "" %%Fail
+	    "text/plain" %%Default case
     end.
 
 
