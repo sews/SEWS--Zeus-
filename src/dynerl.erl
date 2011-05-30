@@ -7,6 +7,7 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
+
 match(String) ->
 	Start = string:str(String, "<?erl"),
 	End = string:str(String, "?>"),
@@ -17,7 +18,7 @@ match(String) ->
 			%% io:format("~n~p~n", [String]),
 			String;
 		    Value ->
-			NewString = string:substr(String, 1, Start - 1) ++ Value ++ string:substr(String, End + 2),
+			NewString = string:substr(String, 1, Start - 1) ++ Value ++ match(string:substr(String, End + 2)),
 			%% io:format("~n~p~n", [NewString]),
 			NewString
 		end;
@@ -40,6 +41,8 @@ eval(String) ->
 	    if
 		is_integer(Value) -> integer_to_list(Value);
 		is_float(Value) -> float_to_list(Value);
+		is_tuple(Value) -> tuple_to_list(Value);
+		is_atom(Value)->atom_to_list(Value);
 		true ->Value
 	    end;
 	    %% io:format("Value is ~p~n",[Value]),
