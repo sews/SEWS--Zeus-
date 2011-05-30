@@ -37,17 +37,11 @@ eval(String) ->
 	    %NewBindings=erl_eval:add_binding('B',45,Bindings),
 	    %io:format("The bindings are ~p~n",[erl_eval:bindings(NewBindings)]),
 	    %io:format("Going into erl_eval:exprs~n",[]),
-	{value,Value,_} = erl_eval:exprs(ErlAbsForm, erl_eval:new_bindings()),
-	    if
-		is_integer(Value) -> integer_to_list(Value);
-		is_float(Value) -> float_to_list(Value);
-		is_tuple(Value) -> tuple_to_list(Value);
-		is_atom(Value)->atom_to_list(Value);
-		true ->Value
-	    end;
+			{value,Value,_} = erl_eval:exprs(ErlAbsForm, erl_eval:new_bindings()),
+			lists:flatten(io_lib:format("~p", [Value]));
 	    %% io:format("Value is ~p~n",[Value]),
 
-	{error, Reason} -> String
+		{error, Reason} -> String
     end.
 
 f1() ->
