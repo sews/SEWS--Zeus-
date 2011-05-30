@@ -17,7 +17,7 @@ match(String) ->
 			%% io:format("~n~p~n", [String]),
 			String;
 		    Value ->
-			NewString = string:substr(String, 1, Start - 1) ++ integer_to_list(Value) ++ string:substr(String, End + 2),
+			NewString = string:substr(String, 1, Start - 1) ++ Value ++ string:substr(String, End + 2),
 			%% io:format("~n~p~n", [NewString]),
 			NewString
 		end;
@@ -37,8 +37,13 @@ eval(String) ->
 	    %io:format("The bindings are ~p~n",[erl_eval:bindings(NewBindings)]),
 	    %io:format("Going into erl_eval:exprs~n",[]),
 	{value,Value,_} = erl_eval:exprs(ErlAbsForm, erl_eval:new_bindings()),
+	    if
+		is_integer(Value) -> integer_to_list(Value);
+		is_float(Value) -> float_to_list(Value);
+		true ->Value
+	    end;
 	    %% io:format("Value is ~p~n",[Value]),
-	    Value;
+
 	{error, Reason} -> String
     end.
 
