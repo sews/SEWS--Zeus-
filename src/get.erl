@@ -7,7 +7,7 @@
 -export([handler/1]).
 
 -include_lib("eunit/include/eunit.hrl").
--include("../inclue/config.hrl").
+-include("../include/config.hrl").
 
 %% //==================\\
 %% ||EXPORTED FUNCTIONS||
