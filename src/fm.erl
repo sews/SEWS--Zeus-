@@ -149,7 +149,7 @@ fixPath (Path) ->
 
 
 uploadFile (WebPath, FileContents) ->
-    FileName = WebPath,
+    FileName = ?WWW_ROOT ++ WebPath,
     case file:write_file(FileName, list_to_binary(FileContents)) of
 	ok ->
 	    ok;
