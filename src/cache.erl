@@ -93,7 +93,12 @@ read(Path, Name) ->
 	    {error,enoent}
     end.
 
-%% TEST CASES
+read(Path,_,nocache)->    
+    {ok, Bin} = file:read_file(Path),
+    Bin;
+read(Path,Name,cache) ->
+    read(Path,Name).
+%%% TEST CASES
 
 
  %% read_test() ->
