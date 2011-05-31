@@ -6,8 +6,7 @@
 
 -include_lib("eunit/include/eunit.hrl").
 -include_lib("kernel/include/file.hrl").
-
--define(WWW_ROOT, "/home").
+-include("../include/config.hrl").
 
 %% //==================\\
 %% ||INTERNAL FUNCTIONS||

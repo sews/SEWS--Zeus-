@@ -1,8 +1,7 @@
 -module(main).
 -export([start/0, start/1,start/2, listen/1]).
 
--define(TCP_OPTIONS, [binary, {packet, 0}, {active, false}, {reuseaddr, true}]).
--define(DEFAULT_PORT, 8080).
+-include("../include/config.hrl").
 
 %%EXTERNAL FUNCTIONS:
 %%start(Port) -> <Pid>

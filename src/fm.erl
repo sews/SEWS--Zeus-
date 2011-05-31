@@ -2,9 +2,7 @@
 -module(fm).
 -export([getFile/1, getContents/1, getContentType/1, getInfo/2, dirHandler/1, getInfoAll/1, fixPath/1, uploadFile/2]).
 -include_lib("eunit/include/eunit.hrl").
-
-%% WEB ROOT FOR SEWS (usually /var/www)
--define(WWW_ROOT, "/home").
+-include("../include/config.hrl").
 
 %%	DATATYPES
 %%
