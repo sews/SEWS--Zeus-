@@ -13,7 +13,7 @@ lru(Path,Name) ->
 		{value,{size,EtsSize}} ->
 		    if 
 			EtsSize < MaxCacheSize ->
-			    io:format("Under Cache SIZE"),
+			    %%io:format("Under Cache SIZE"),
 			    case lists:keymember(Path,1,LRUList) of
 				false ->				    
 				    NewMetaList = lists:keystore(etslist,1,MetaList,{etslist,[{Path}|LRUList]}),
@@ -24,17 +24,15 @@ lru(Path,Name) ->
 				    ets:insert(Name,{metadata,NewMetaList})
 			    end;
 			true ->
-			    io:format("Over Cache Size"),
+			    %%io:format("Over Cache Size"),
 			    case lists:keymember(Path,1,LRUList) of
 				 false ->
-				     io:format("FALSE"),
 				     {LastPath} = lists:last(LRUList),
 				     NewLRUList = lists:keydelete(LastPath,1,LRUList),
 				     ets:delete(Name, LastPath),
 				     NewMetaList = lists:keystore(etslist,1,MetaList,{etslist,[{Path}|NewLRUList]}),
 				     ets:insert(Name,{metadata,NewMetaList});
 				true ->
-				    io:format("TRUE"),
 				    NewLRUList = lists:keydelete(Path,1,LRUList),
 				    NewMetaList = lists:keystore(etslist,1,MetaList,{etslist,[{Path}|NewLRUList]}),
 				    ets:insert(Name,{metadata,NewMetaList})

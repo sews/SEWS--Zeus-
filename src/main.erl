@@ -1,5 +1,5 @@
 -module(main).
--export([start/0, start/1,start/2, listen/1]).
+-export([start/0, start/1,start/2, listen/1,listen/2]).
 
 -define(TCP_OPTIONS, [binary, {packet, 0}, {active, false}, {reuseaddr, true}]).
 -define(DEFAULT_PORT, 8080).
@@ -16,14 +16,8 @@ start(Port)->
     spawn(main,listen,[Port]). 
 
 start(Port,FunAtom)->
-    case FunAtom of
-	kor ->
-	    cache:start(etstab,fun cache_kf:killOneRandom/2,50,2000000),
-	    spawn(main,listen,[Port]);
-	lru ->
-	    cache:start(etstab,fun cache_kf:lru/2,50,2000000),
-	    spawn(main,listen,[Port])
-    end.
+    spawn(main,listen,[Port,FunAtom]).
+
 
 
 %%INTERNAL FUNCTIONS:
@@ -31,6 +25,17 @@ listen(Port) ->
     {ok, LSocket} = gen_tcp:listen(Port, ?TCP_OPTIONS),
     cache:start(etstab),
     accept(LSocket).
+
+listen(Port,FunAtom) ->
+    {ok, LSocket} = gen_tcp:listen(Port, ?TCP_OPTIONS),
+    case FunAtom of
+	kor ->
+	    cache:start(etstab,fun cache_kf:killOneRandom/2,50,2000000);
+	lru ->
+	    cache:start(etstab,fun cache_kf:lru/2,50,2000000)
+    end,
+    accept(LSocket).
+
 
 accept(LSocket) ->
     {ok, Socket} = gen_tcp:accept(LSocket),

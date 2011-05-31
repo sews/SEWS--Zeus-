@@ -69,19 +69,19 @@ read(Path, Name) ->
 				    EtsDate = ets:lookup_element(Name,Path,2),
 				    if
 					EtsDate == Date ->
-					    io:format("Were up to date"),
+					    %%io:format("Were up to date"),
 					    ets:lookup_element(Name,Path,3);
 					true ->
 					    {ok, Bin} = file:read_file(Path),
 					    ets:insert(Name,{Path,Date,Bin}),
-					    io:format("Change since last read, updated"),	   		     
+					    %%io:format("Change since last read, updated"),	   		     
 					    Bin
 				    end;
 				_ ->
 				    Fun(Path,Name), %% lru(Path)
 				    {ok, Bin} = file:read_file(Path),
 				    ets:insert(Name,{Path,Date,Bin}),
-				    io:format("Were not in table, now inserted"),
+				    %%io:format("Were not in table, now inserted"),
 				    Bin
 			    end;
 			true -> 
