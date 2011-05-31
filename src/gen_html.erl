@@ -6,8 +6,7 @@
 
 -include_lib("eunit/include/eunit.hrl").
 -include_lib("kernel/include/file.hrl").
-
--define(WWW_ROOT, "/home").
+-include("../include/config.hrl").
 
 %% //==================\\
 %% ||INTERNAL FUNCTIONS||
@@ -75,7 +74,7 @@ gen200Headers() ->
 
 server200Headers(Path) ->
     FileInfo = 
-	case file:read_file_info("/home" ++Path) of
+	case file:read_file_info(?WWW_ROOT ++Path) of
 	    {ok, Fileinfo} -> Fileinfo;
 	    _ -> nofile
 	end,
