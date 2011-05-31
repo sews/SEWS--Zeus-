@@ -51,7 +51,7 @@ handlerAUX(HList) ->
 		{error, eisdir} ->
 		    case fm:getFile(WebPath ++ ?INDEX_FILE) of
 			{ok, File_handle} -> %% 
-			    list_to_binary([gen_html:server200Headers(WebPath),fm:getContents(File_handle)]);
+			    list_to_binary([gen_html:server200Headers(WebPath ++ ?INDEX_FILE),fm:getContents(File_handle)]);
 			{error, enoent} ->	
 			    case fm:dirHandler(WebPath) of
 				{ok, DirList} -> 
