@@ -8,6 +8,7 @@
 -compile(export_all). %% For testing purposes
 
 -include_lib("eunit/include/eunit.hrl").
+-include("../include/config.hrl").
 
 %% @doc The Sews Parser: Parses the requests to a format suitable to erlang.  
 

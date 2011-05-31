@@ -1,4 +1,3 @@
-
 -module(fm).
 -export([getFile/1, getContents/1, getContentType/1, getInfo/2, dirHandler/1, getInfoAll/1, fixPath/1, uploadFile/2]).
 -include_lib("eunit/include/eunit.hrl").
@@ -88,7 +87,7 @@ getFileInfo(FileName) ->
 
 
 dirHandler(WebDir) ->
-    Dir = ?WWW_ROOT ++ WebDir,
+    Dir =  WebDir,
     case filelib:is_file(Dir) of	%% if Dir exists
 	true ->
 	    case filelib:is_dir(Dir) of	%% if Dir is a directory
@@ -150,7 +149,7 @@ fixPath (Path) ->
 
 
 uploadFile (WebPath, FileContents) ->
-    FileName = ?WWW_ROOT ++ WebPath,
+    FileName = WebPath,
     case file:write_file(FileName, list_to_binary(FileContents)) of
 	ok ->
 	    ok;
@@ -170,8 +169,7 @@ uploadFile (WebPath, FileContents) ->
 %%  Use FileHandle in all file information functions in this module.
 %%
 
-getFile(WebPath) ->
-    Path = ?WWW_ROOT ++ WebPath,
+getFile(Path) ->
     IsDir = filelib:is_dir(Path),
     IsFile = filelib:is_file(Path),
     if

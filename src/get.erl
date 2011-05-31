@@ -38,24 +38,24 @@ handler({_,_}) -> {error, notCorrectlyTagged}.
 
 handlerAUX(HList) -> 
     case lists:keysearch(path, 1, HList) of
-	{value, {path, WebPath}} ->
-	    Path = ?WWW_ROOT ++ WebPath,
-	    case fm:getFile(Path) of
+	{value, {path, Path}} ->
+	    WebPath = ?WWW_ROOT ++ Path,
+	    case fm:getFile(WebPath) of
 		{ok, File_handle} -> 
 		    case string:str(Path, ".esl") of 
 			0 ->
-			    list_to_binary([gen_html:server200Headers(Path),fm:getContents(File_handle)]);
+			    list_to_binary([gen_html:server200Headers(WebPath),fm:getContents(File_handle)]);
 			_ ->
 			    list_to_binary([gen_html:gen200Headers(),dynerl:match(fm:getContents(File_handle))])
 		    end;
 		{error, eisdir} ->
-		    case fm:getFile(Path ++ ?INDEX_FILE) of
+		    case fm:getFile(WebPath ++ ?INDEX_FILE) of
 			{ok, File_handle} -> %% 
-			    list_to_binary([gen_html:server200Headers(Path),fm:getContents(File_handle)]);
+			    list_to_binary([gen_html:server200Headers(WebPath),fm:getContents(File_handle)]);
 			{error, enoent} ->	
-			    case fm:dirHandler(Path) of
+			    case fm:dirHandler(WebPath) of
 				{ok, DirList} -> 
-				    gen_html:dirDoc(DirList, HList);
+				    gen_html:dirDoc(DirList, WebPath,Path);
 				Error ->
 				    Error
 			    end;

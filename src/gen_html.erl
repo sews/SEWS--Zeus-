@@ -21,26 +21,24 @@
 %% @hidden@private Removed Host as a variable
 %% @since 12.05.11
 
-dirDocAux(DirList, Path, Mode, []) ->
-    HTMLString = gen200Headers() ++ "<html><head><title>Index of " ++ Path ++ "</title></head><body>
-
-	<table><tr><td><h1>Index of " ++ Path ++ "</h1><hr>",
-
+dirDocAux(DirList,WebPath, Path, Mode, []) ->
+    HTMLString = gen200Headers() ++ "<html><head><title>Index of " ++ WebPath ++ "</title></head><body>
+	<table><tr><td><h1>Index of " ++ WebPath ++ "</h1><hr>",
 	case Mode of
 	    dirlist ->
-    		dirDocAux(DirList, Path, Mode, HTMLString);
+    		dirDocAux(DirList,WebPath, Path, Mode, HTMLString);
 	    upload ->
-    		dirDocAux(DirList, Path, Mode, HTMLString ++ "<h2>File successfully uploaded :D</h2><hr>")
+    		dirDocAux(DirList,WebPath, Path, Mode, HTMLString ++ "<h2>File successfully uploaded :D</h2><hr>")
 	end;
-dirDocAux([File|FileTail], Path, Mode, Html) ->
-    IsDir = filelib:is_dir(Path ++ File),
+dirDocAux([File|FileTail],WebPath, Path, Mode, Html) ->
+    IsDir = filelib:is_dir(WebPath ++ File),
     case IsDir of
 	true -> %% File refers to a directory
-	    dirDocAux(FileTail, Path, Mode, Html ++ "[Dir] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />");
+	    dirDocAux(FileTail,WebPath, Path, Mode, Html ++ "[Dir] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />");
 	false -> %% File refers to a file
-	    dirDocAux(FileTail, Path, Mode, Html ++ "[File] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />")
+	    dirDocAux(FileTail,WebPath, Path, Mode, Html ++ "[File] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />")
     end;
-dirDocAux([], _, _, Html) ->
+dirDocAux([], _, _,_, Html) ->
     Html ++ "<hr />".
 
 %% //==================\\
@@ -52,19 +50,11 @@ dirDocAux([], _, _, Html) ->
 %% @spec dirDoc(DirList::list, Hlist::list) -> String::list
 %% @since 12.05.11
 
-dirDoc(DirList, HList)-> 
-
-    %% Get path so requested file from HList
-				  Path = case lists:keysearch(path, 1, HList) of 
-					     {value,{path, P}} ->
-						 P;
-					     false ->
-						 error_mod:handler(nopath)
-					 end,
-				  dirDocAux(DirList, Path, dirlist, []).
+dirDoc(DirList, WebPath,Path)-> 
+    dirDocAux(DirList, WebPath,Path, dirlist, []).
 
 
-postHTML (Dir, _, Path) -> dirDocAux (Dir, Path, upload, []).
+postHTML (Dir, _, Path) -> dirDocAux (Dir,?WWW_ROOT++Path, Path, upload, []).
 
 gen200eslHeaders() ->
     "HTTP/1.0 200 OK:\r\n" ++ "Content-Type: text/html" ++  "\r\nAccept-Ranges: bytes\r\nServer: Sews Server version 0.2\r\nDate: "++ dateFormatted(calendar:universal_time()) ++"\r\nConnection: close\r\n\n".
