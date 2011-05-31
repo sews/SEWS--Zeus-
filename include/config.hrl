@@ -3,3 +3,6 @@
 
 %% WEB ROOT FOR SEWS (usually /var/www)
 -define(WWW_ROOT, "/home").
+
+%% index file
+-define(INDEX_FILE, "index.html").
