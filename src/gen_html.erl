@@ -41,7 +41,7 @@ dirDocAux([File|FileTail], Path, Mode, Html) ->
 	    dirDocAux(FileTail, Path, Mode, Html ++ "[File] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />")
     end;
 dirDocAux([], _, _, Html) ->
-    Html ++ "<p>ohai!</p>".
+    Html ++ "<hr />".
 
 %% //==================\\
 %% ||EXPORTED FUNCTIONS||
