@@ -35,57 +35,60 @@ handler({_,_}) -> {error, notCorrectlyTagged}.
 %% @since 2011-05-12 | 21:00
 
 handlerAUX(HList) -> 
-	FileName = case lists:keysearch(filename, 1, HList) of 
-		{value, {filename, FN}} ->
-			FN;
-		false ->
-			{error, enoent}
-	end,
-	Path = case lists:keysearch(path, 1, HList) of 
-    	{value,{path, P}} ->
-		   	fm:fixPath(P);
+    FileName = 
+	case lists:keysearch(filename, 1, HList) of 
+	    {value, {filename, FN}} ->
+		FN;
 	    false ->
-			{error, enoent}
+		{error, enoent}
 	end,
-	FileContents = case lists:keysearch(file, 1, HList) of 
-		{value, {file, F}} ->
-			F;
-		false ->
-			{error, enoent}
+    Path = 
+	case lists:keysearch(path, 1, HList) of 
+	    {value,{path, P}} ->
+		fm:fixPath(P);
+	    false ->
+		{error, enoent}
 	end,
-	if 	FileName 		== {error, enoent};	%% error handling
-		Path 			== {error, enoent};
-		FileContents 	== {error, enoent} ->
-			{error, enoent};
-		true ->
-			case fm:uploadFile(Path ++ FileName, FileContents) of
-				ok ->
-					case fm:dirHandler(Path) of
-						{ok, DirList} -> 
-							gen_html:postHTML (DirList, HList, Path);
-						{error_eval, Bin} ->
-							Bin;
-						ErrorTuple ->
-							ErrorTuple
-					end;
-				{error_eval, Bin} ->
-					Bin;
-				ErrorTuple ->
-					ErrorTuple
-			end
-	end.
-	    	
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
+    FileContents = case lists:keysearch(file, 1, HList) of 
+		       {value, {file, F}} ->
+			   F;
+		       false ->
+			   {error, enoent}
+		   end,
+    if 	
+	FileName 		== {error, enoent};	%% error handling
+	Path 			== {error, enoent};
+	FileContents 	== {error, enoent} ->
+	    {error, enoent};
+	true ->
+	    case fm:uploadFile(Path ++ FileName, FileContents) of
+		ok ->
+		    case fm:dirHandler(Path) of
+			{ok, DirList} -> 
+			    gen_html:postHTML (DirList, HList, Path);
+			{error_eval, Bin} ->
+			    Bin;
+			ErrorTuple ->
+			    ErrorTuple
+		    end;
+		{error_eval, Bin} ->
+		    Bin;
+		ErrorTuple ->
+		    ErrorTuple
+	    end
+    end.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
