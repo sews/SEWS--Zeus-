@@ -5,11 +5,7 @@
 -compile(export_all).
 
 -include_lib("eunit/include/eunit.hrl").
-
--define(ETS_OPTIONS,[set,named_table,public]).
--define(MAX_FILE_SIZE,2000000).
--define(MAX_CACHE_SIZE,51).
-
+-include("../include/config.hrl").
 %% start()
 %% @doc creates a new etstable with the name "etstab". ETS_OPTIONS pre defined.
 
