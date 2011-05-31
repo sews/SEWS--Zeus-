@@ -42,23 +42,7 @@ dirDocAux([File|FileTail], Path, Mode, Html) ->
 	    dirDocAux(FileTail, Path, Mode, Html ++ "[File] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />")
     end;
 dirDocAux([], _, _, Html) ->
-    Html ++ "</td><td>
-
-    	<FORM action=\"\" 
-    		  enctype=\"multipart/form-data\"
-			  method=\"post\">
-			<P>
-	<INPUT 	type=\"file\"  
-          				name=\"fileselect\"
-          				value=\"defaultfile\">
-        	<P>
-
-	<INPUT 	type=\"submit\" 
-        				value=\"Upload\">
-		</FORM>
-
-
-	</td></tr></table><hr></body></html>".
+    Html ++ "<p>ohai!</p>".
 
 %% //==================\\
 %% ||EXPORTED FUNCTIONS||
