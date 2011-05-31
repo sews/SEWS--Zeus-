@@ -134,6 +134,8 @@ parseGET([[H|InnerTail]|MainTail],ParsedList) ->
 %% parseFile(TheList::list)
 %% @doc Returns a copy of list with the last two elements deleted
 
+%%parseFile ([], _, Acc) ->
+%%	{yes, Acc};
 parseFile ([A, B], Boundary, Acc) -> 
         Mahboy = string:strip(B, left, $-),
 	case Mahboy =:= Boundary of

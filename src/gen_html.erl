@@ -54,7 +54,7 @@ dirDoc(DirList, WebPath, Path)->
     dirDocAux(DirList, WebPath, Path, dirlist, []).
 
 
-postHTML (Dir, _, Path) -> dirDocAux (Dir,?WWW_ROOT++Path, Path, upload, []).
+postHTML (Dir, WebPath, Path) -> dirDocAux (Dir, WebPath, Path, upload, []).
 
 gen200eslHeaders() ->
     "HTTP/1.0 200 OK:\r\n" ++ "Content-Type: text/html" ++  "\r\nAccept-Ranges: bytes\r\nServer: Sews Server version 0.2\r\nDate: "++ dateFormatted(calendar:universal_time()) ++"\r\nConnection: close\r\n\n".

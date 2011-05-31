@@ -55,7 +55,7 @@ handlerAUX(HList) ->
 			{error, enoent} ->	
 			    case fm:dirHandler(WebPath) of
 				{ok, DirList} -> 
-				    gen_html:dirDoc(DirList, WebPath,Path);
+				    gen_html:dirDoc(DirList, WebPath, Path);
 				Error ->
 				    Error
 			    end;
