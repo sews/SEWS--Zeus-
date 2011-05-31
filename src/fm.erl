@@ -55,9 +55,9 @@ getContentType(Path) ->
 	    "audio/x-wav";
 	".gz" ->
 	    "application/x-gzip";
-	 ".gtar"->
+	".gtar"->
 	    "application/x-gtar";
-	".class" ->
+	OCTET when OCTET == ".class";".exe" ->
 	    "application/octet-stream";		
 	_ ->
 	    "text/plain" %%Default case
@@ -98,29 +98,29 @@ dirHandler(WebDir) ->
 		    case file:list_dir(Dir) of
 			{ok, DirList} ->
 			    DirListStripped = lists:filter(fun ([A | _]) -> A =/= $. end, DirList),	%% strip all ".*" files (eg hidden files)
-			    DirSort = fun(File1, File2) ->
-					      File1Dir = filelib:is_dir(Dir ++ File1),
-					      File2Dir = filelib:is_dir(Dir ++ File2),
-					      File1Low = string:to_lower(File1),
-					      File2Low = string:to_lower(File2),
-					      if
-						  File1Dir == false, File2Dir 			-> false;
-						  File1Dir == false, File1Low > File2Low 	-> false;
-						  File2Dir, File1Low > File2Low 			-> false;
-						  true -> true
-					      end
-				      end,
-			    {ok, lists:sort(DirSort, DirListStripped)};
-			Error ->
-			    Error
-		    end;
-		false ->	%% not gonna happen
-		    {error, eisfile}
-	    end;
-	false ->
-	    %% file not found
-	    {error, enoent}
-    end.
+DirSort = fun(File1, File2) ->
+		  File1Dir = filelib:is_dir(Dir ++ File1),
+		  File2Dir = filelib:is_dir(Dir ++ File2),
+		  File1Low = string:to_lower(File1),
+		  File2Low = string:to_lower(File2),
+		  if
+		      File1Dir == false, File2Dir 			-> false;
+		      File1Dir == false, File1Low > File2Low 	-> false;
+		      File2Dir, File1Low > File2Low 			-> false;
+		      true -> true
+		  end
+	  end,
+{ok, lists:sort(DirSort, DirListStripped)};
+Error ->
+    Error
+end;
+false ->	%% not gonna happen
+    {error, eisfile}
+end;
+false ->
+    %% file not found
+    {error, enoent}
+end.
 
 %% @spec (Path::string()) -> FixedPath
 %% @doc	Returns a modified version of Path that both begins and ends with the $/. character. If both $/. are already present, Path is returned unchanged.
@@ -237,7 +237,7 @@ getInfo({_, InfoList}, Info) ->
 
 getInfo_test() ->
     ?assertEqual("text/html", getInfo({[], [{contenttype, "text/html"}]}, contenttype)).
- 
+
 getInfoAll_test() ->
     ?assertMatch([{contenttype, "text/html"}], getInfoAll({[], [{contenttype, "text/html"}]})).
 

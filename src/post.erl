@@ -49,12 +49,13 @@ handlerAUX(HList) ->
 	    false ->
 		{error, enoent}
 	end,
-    FileContents = case lists:keysearch(file, 1, HList) of 
-		       {value, {file, F}} ->
-			   F;
-		       false ->
-			   {error, enoent}
-		   end,
+    FileContents =
+	case lists:keysearch(file, 1, HList) of 
+	    {value, {file, F}} ->
+		F;
+	    false ->
+		{error, enoent}
+	end,
     if 	
 	FileName 		== {error, enoent};	%% error handling
 	Path 			== {error, enoent};

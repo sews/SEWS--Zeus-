@@ -40,7 +40,12 @@ read(Path, Name) ->
     IsDir = filelib:is_dir(Path),
     IsFile = filelib:is_file(Path),
     IsDyn = 
-	case string:sub_string(Path,string:rchr(Path,$.)) of
+	TypeIndex = 	
+	case  string:rchr(Path,$.) of
+	    0 -> 1;
+	    Index -> Index
+	end,
+	case string:sub_string(Path,TypeIndex) of
 	    ".dyn" -> true;
 	    _ -> false
 	end,
