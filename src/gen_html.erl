@@ -74,7 +74,7 @@ gen200Headers() ->
 
 server200Headers(Path) ->
     FileInfo = 
-	case file:read_file_info("/home" ++Path) of
+	case file:read_file_info(?WWW_ROOT ++Path) of
 	    {ok, Fileinfo} -> Fileinfo;
 	    _ -> nofile
 	end,
