@@ -21,22 +21,22 @@
 %% @hidden@private Removed Host as a variable
 %% @since 12.05.11
 
-dirDocAux(DirList,WebPath, Path, Mode, []) ->
+dirDocAux(DirList, WebPath, Path, Mode, []) ->
     HTMLString = gen200Headers() ++ "<html><head><title>Index of " ++ WebPath ++ "</title></head><body>
 	<table><tr><td><h1>Index of " ++ WebPath ++ "</h1><hr>",
 	case Mode of
 	    dirlist ->
-    		dirDocAux(DirList,WebPath, Path, Mode, HTMLString);
+    		dirDocAux(DirList, WebPath, Path, Mode, HTMLString);
 	    upload ->
-    		dirDocAux(DirList,WebPath, Path, Mode, HTMLString ++ "<h2>File successfully uploaded :D</h2><hr>")
+    		dirDocAux(DirList, WebPath, Path, Mode, HTMLString ++ "<h2>File successfully uploaded :D</h2><hr>")
 	end;
-dirDocAux([File|FileTail],WebPath, Path, Mode, Html) ->
+dirDocAux([File|FileTail], WebPath, Path, Mode, Html) ->
     IsDir = filelib:is_dir(WebPath ++ File),
     case IsDir of
 	true -> %% File refers to a directory
-	    dirDocAux(FileTail,WebPath, Path, Mode, Html ++ "[Dir] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />");
+	    dirDocAux(FileTail, WebPath, Path, Mode, Html ++ "[Dir] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />");
 	false -> %% File refers to a file
-	    dirDocAux(FileTail,WebPath, Path, Mode, Html ++ "[File] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />")
+	    dirDocAux(FileTail, WebPath, Path, Mode, Html ++ "[File] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />")
     end;
 dirDocAux([], _, _,_, Html) ->
     Html ++ "<hr />".
@@ -50,8 +50,8 @@ dirDocAux([], _, _,_, Html) ->
 %% @spec dirDoc(DirList::list, Hlist::list) -> String::list
 %% @since 12.05.11
 
-dirDoc(DirList, WebPath,Path)-> 
-    dirDocAux(DirList, WebPath,Path, dirlist, []).
+dirDoc(DirList, WebPath, Path)-> 
+    dirDocAux(DirList, WebPath, Path, dirlist, []).
 
 
 postHTML (Dir, _, Path) -> dirDocAux (Dir,?WWW_ROOT++Path, Path, upload, []).
