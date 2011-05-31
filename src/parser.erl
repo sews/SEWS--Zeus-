@@ -202,9 +202,9 @@ parsePOSTAux([H | Rest], Boundary, ParsedList) ->
 parsePOST([], ParsedList) -> {post, ParsedList};
 parsePOST([H | Rest], []) ->
 
-	P = string:sub_word(H, 2),
-	EndPos = string:rchr(P, $/),
-	Path = string:sub_string(P, 1, EndPos),
+	Path = string:sub_word(H, 2),
+	%%EndPos = string:rchr(P, $/),
+	%%Path = string:sub_string(P, 1, EndPos),
 	
 	parsePOST (Rest, [{path, Path}]);
 parsePOST([H | Rest], ParsedList) ->

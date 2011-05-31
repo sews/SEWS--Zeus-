@@ -6,6 +6,7 @@
 -export([handler/1]).
 
 -include_lib("eunit/include/eunit.hrl").
+-include("../include/config.hrl").
 
 %% //==================\\
 %% ||EXPORTED FUNCTIONS||
@@ -64,9 +65,9 @@ handlerAUX(HList) ->
 	true ->
 	    case fm:uploadFile(Path ++ FileName, FileContents) of
 		ok ->
-		    case fm:dirHandler(Path) of
+		    case fm:dirHandler(?WWW_ROOT ++ Path) of
 			{ok, DirList} -> 
-			    gen_html:postHTML (DirList, HList, Path);
+			    gen_html:postHTML (DirList, ?WWW_ROOT ++ Path, Path);
 			{error_eval, Bin} ->
 			    Bin;
 			ErrorTuple ->
