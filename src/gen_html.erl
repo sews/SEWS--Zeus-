@@ -33,7 +33,7 @@ dirDocAux(DirList, Path, Mode, []) ->
     		dirDocAux(DirList, Path, Mode, HTMLString ++ "<h2>File successfully uploaded :D</h2><hr>")
 	end;
 dirDocAux([File|FileTail], Path, Mode, Html) ->
-    IsDir = filelib:is_dir(?WWW_ROOT ++ Path ++ File),
+    IsDir = filelib:is_dir(Path ++ File),
     case IsDir of
 	true -> %% File refers to a directory
 	    dirDocAux(FileTail, Path, Mode, Html ++ "[Dir] <a href='" ++ Path ++ File ++ "'>" ++ File ++ "</a>" ++ "<br />");
@@ -74,7 +74,7 @@ gen200Headers() ->
 
 server200Headers(Path) ->
     FileInfo = 
-	case file:read_file_info(?WWW_ROOT ++Path) of
+	case file:read_file_info(Path) of
 	    {ok, Fileinfo} -> Fileinfo;
 	    _ -> nofile
 	end,
