@@ -43,7 +43,7 @@ accept(LSocket) ->
 
 
 handleMultiPart(Socket, Boundary, File) ->
-    case gen_tcp:recv(Socket, 0, 3000) of		%% receive socket data and forward it to the parser
+    case gen_tcp:recv(Socket, 0, 30000) of		%% receive socket data and forward it to the parser
 	{ok, Indata} ->
 	    case parser:parseMultiPart(binary_to_list(Indata), Boundary, File) of
 		{continue, Part} ->
@@ -102,7 +102,7 @@ prepOSTProcessing (Parsed, Socket) ->
 handler(Socket) ->
     Data = case gen_tcp:recv(Socket, 0) of
 	       {ok, Indata} ->
-		   %%io:format("Request: ~n~p~n",[Indata]),
+		   io:format("Request: ~n~p~n",[Indata]),
 		   Parsed = parser:parse(binary_to_list(Indata)),
 		   case Parsed of
 		       {get, _} -> 
@@ -113,7 +113,7 @@ handler(Socket) ->
 			   {error, Reason}
 		   end;
 	       E ->
-		   E
+		   	E
 	   end,
     Outdata = case Data of 
 		  {error_eval, B} ->	%% should not happen anymore
@@ -124,7 +124,7 @@ handler(Socket) ->
 		  Any ->
 		      Any
 	      end,
-    %%io:format("Answer: ~n~p~n",[Outdata]),
+    io:format("Answer: ~n~p~n",[Outdata]),
     gen_tcp:send(Socket, Outdata),
     gen_tcp:close(Socket).
 

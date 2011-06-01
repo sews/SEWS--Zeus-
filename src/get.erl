@@ -46,7 +46,8 @@ handlerAUX(HList) ->
 			0 ->
 			    list_to_binary([gen_html:server200Headers(WebPath),fm:getContents(File_handle)]);
 			_ ->
-			    list_to_binary([gen_html:gen200Headers(),dynerl:match(fm:getContents(File_handle))])
+				list_to_binary([gen_html:server200Headers(WebPath),fm:getContents(File_handle)])
+			    %%list_to_binary([gen_html:gen200Headers(),dynerl:match(fm:getContents(File_handle))])
 		    end;
 		{error, eisdir} ->
 		    case fm:getFile(WebPath ++ ?INDEX_FILE) of

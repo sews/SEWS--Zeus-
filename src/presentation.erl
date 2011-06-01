@@ -39,14 +39,26 @@ GET /dennisrosen HTTP/1.1\r\nHost: localhost:8080\r\nUser-Agent: Mozilla/5.0 (X1
       {host,\"localhost:8080\"},
       {path,\"/dennisrosen/\"}]}~n~n",
     "GET:~nThe parsed request is then sent towards the GET or POST module depending upon its type.~n~nget:handler(Parsed).~n~n",
-    "The GET module extracts the path, filename and other info and does work accordingly. If the file requested is a folder, GET first searches for a index.html file in the folder, and returns its contents if found.~n",
+    "The GET module extracts the path, filename and other info and does work accordingly. If the file requested is a folder, GET first searches for an index.html file in the folder, and returns its contents if found.~n",
 	"If index.html does not exist, GET sends the request on towards the gen_html module, which generates an html document listing the files in the folder.~n",
 	"If the request is an actual file and not a folder, the file contents are returned from the GET module.~n",
-	"~nFM and Cache~nGET uses the fm module (filemanager) to read, search and manipulate files. The fm module in turn uses the cache module to cache files read.~n",
-	"The cache module implements by default an LRU algorithm for file caching. The caching algorithm used is fully customizable, as is the maximum cache size.~n",
+	%%"~nFM and Cache~nGET uses the fm module (filemanager) to read, search and manipulate files. The fm module in turn uses the cache module to cache files read.~n",
+	%%"The cache module implements by default an LRU algorithm for file caching. The caching algorithm used is fully customizable, as is the maximum cache size.~n",
 	"~nDynerl~nSEWS also supports custom scripting in special files suffixed with \".esl\".~n",
 	"This means SEWS is able to read *.esl files and execute any code in the file surrounded by the tags <?esl and ?>.~n",
-	"Example: The file \"big alex on horse.esl\":~n~nalex~n<?erl~nA = 1 + 2,~nC = A.~n?>on~nhorse~n~n",
+	"Example: The file \"short.esl\":~n~nAIR
+AISS
+AKT
+AKTA
+AKTER
+AKTERST
+AKTERUT
+AKTIE~n<?erl~nA = 1 + 2,~nC = A.~n?>
+AKTRA
+AKTRE
+AKTRIS
+AKTUELL
+AKUSTIK~n~n",
 	"When a GET request for this file is recieved SEWS will execute the erlang code.~n",
 	"~nWe will now show you first-hand use of SEWS!~n"
 	],

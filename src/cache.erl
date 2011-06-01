@@ -35,55 +35,60 @@ read(Path, Name) ->
     {value,{killfun,Fun}} = lists:keysearch(killfun,1,MetaList),
     IsDir = filelib:is_dir(Path),
     IsFile = filelib:is_file(Path),
-    IsDyn = 
 	TypeIndex = 	
 	case  string:rchr(Path,$.) of
 	    0 -> 1;
 	    Index -> Index
 	end,
-	case string:sub_string(Path,TypeIndex) of
-	    ".dyn" -> true;
+	IsDyn = case string:sub_string(Path,TypeIndex) of
+	    ".esl" -> true;
 	    _ -> false
 	end,
     if
-	IsDyn -> dynerl:match(binary_to_list(file:read_file(Path)));
+	IsDyn -> 
+		case file:read_file(Path) of
+			{ok, Bin} ->
+				dynerl:match(binary_to_list(Bin));
+			E ->
+				E
+		end;
 	IsDir ->
 	    {error,eisdir};
 	IsFile ->
 	    case file:read_file_info(Path) of
-		{error, Reason} ->
-		    {error, Reason};
-		{ok, FileInfo} ->
-		    Date = element(6,FileInfo),
-		    Size = element(2,FileInfo),
-		    {value,{max_file_size,MaxFileSize}} = lists:keysearch(max_file_size,1,MetaList),
-		    if
-			Size < MaxFileSize -> 
-			    case ets:member(Name,Path) of
-				true ->
-				    Fun(Path,Name),  %% lru(Path)
-				    EtsDate = ets:lookup_element(Name,Path,2),
-				    if
-					EtsDate == Date ->
-					    %%io:format("Were up to date"),
-					    ets:lookup_element(Name,Path,3);
+			{error, Reason} ->
+				{error, Reason};
+			{ok, FileInfo} ->
+				Date = element(6,FileInfo),
+				Size = element(2,FileInfo),
+				{value,{max_file_size,MaxFileSize}} = lists:keysearch(max_file_size,1,MetaList),
+				if
+				Size < MaxFileSize -> 
+					case ets:member(Name,Path) of
 					true ->
-					    {ok, Bin} = file:read_file(Path),
-					    ets:insert(Name,{Path,Date,Bin}),
-					    %%io:format("Change since last read, updated"),	   		     
-					    Bin
-				    end;
-				_ ->
-				    Fun(Path,Name), %% lru(Path)
-				    {ok, Bin} = file:read_file(Path),
-				    ets:insert(Name,{Path,Date,Bin}),
-				    %%io:format("Were not in table, now inserted"),
-				    Bin
-			    end;
-			true -> 
-			    {ok, Bin} = file:read_file(Path),
-			    Bin
-		    end
+						Fun(Path,Name),  %% lru(Path)
+						EtsDate = ets:lookup_element(Name,Path,2),
+						if
+						EtsDate == Date ->
+							%%io:format("Were up to date"),
+							ets:lookup_element(Name,Path,3);
+						true ->
+							{ok, Bin} = file:read_file(Path),
+							ets:insert(Name,{Path,Date,Bin}),
+							%%io:format("Change since last read, updated"),	   		     
+							Bin
+						end;
+					_ ->
+						Fun(Path,Name), %% lru(Path)
+						{ok, Bin} = file:read_file(Path),
+						ets:insert(Name,{Path,Date,Bin}),
+						%%io:format("Were not in table, now inserted"),
+						Bin
+					end;
+				true -> 
+					{ok, Bin} = file:read_file(Path),
+					Bin
+				end
 	    end;
 	true ->
 	    {error,enoent}
