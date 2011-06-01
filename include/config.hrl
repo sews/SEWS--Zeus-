@@ -2,7 +2,7 @@
 -define(DEFAULT_PORT, 8080).
 
 %% WEB ROOT FOR SEWS (usually /var/www)
--define(WWW_ROOT, "/home").
+-define(WWW_ROOT, "/var/www").
 
 %% index file
 -define(INDEX_FILE, "index.html").
