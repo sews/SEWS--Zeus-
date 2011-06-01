@@ -23,8 +23,8 @@ start () ->
 	"INTRO:~nTo start SEWS enter main:start() in the erlang shell.~n~n1>main:start().~n<0.37.0>~n~n",
 	"The main module listens to a port (default port 8080).~n",
 	"When a request is sent to SEWS, main sends the request to the parser module.~n",
-	"~nPARSER:~nThe parser module extracts data from the request into a manageable format.~n",
-	"~n1>Parsed = parser:parse(binary_to_list(Indata)).~n~n",
+	"~nhandler(Socket) ->~n	Data = case gen_tcp:recv(Socket, 0) of~n		Parsed = parser:parse(binary_to_list(Indata)).~n",
+	"~nPARSER:~nThe parser module extracts data from the request into a manageable format.~n~n",
 	"~nHere's an example of Indata (a GET request sent from a web site using a GET form):~n
 GET /dennisrosen HTTP/1.1\r\nHost: localhost:8080\r\nUser-Agent: Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1.3) Gecko/20091020 Ubuntu/9.10 (karmic) Firefox/3.5.3\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\nAccept-Language: en-us,en;q=0.5\r\nAccept-Encoding: gzip,deflate\r\nAccept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7\r\nKeep-Alive: 300\r\nConnection: keep-alive\r\n\r\n",
 	"~nAnd here's the result of parser:parse():~n
@@ -47,7 +47,8 @@ GET /dennisrosen HTTP/1.1\r\nHost: localhost:8080\r\nUser-Agent: Mozilla/5.0 (X1
 	"~nDynerl~nSEWS also supports custom scripting in special files suffixed with \".esl\".~n",
 	"This means SEWS is able to read *.esl files and execute any code in the file surrounded by the tags <?esl and ?>.~n",
 	"Example: The file \"big alex on horse.esl\":~n~nalex~n<?erl~nA = 1 + 2,~nC = A.~n?>on~nhorse~n~n",
-	"When a GET request for this file is recieved SEWS will execute the erlang code.~n"
+	"When a GET request for this file is recieved SEWS will execute the erlang code.~n",
+	"~nWe will now show you first-hand use of SEWS!~n"
 	],
 	
 	startAux(L, []).
