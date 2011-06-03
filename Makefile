@@ -1,61 +1,54 @@
-APP_NAME = SEWS Erlang Web Server
-SRC = src/
-DOCDIR = doc/html/
+#################### (you must change this to your group number)
+GROUP_NUMBER := 6
+####################
 
-# Default compiler and compiling options
-CC = erlc -W
+ERLC := erlc
+ERLC_FLAGS := -W -I include
 
-ERL = erl
+ERL_FILES := $(wildcard src/*.erl)
+BEAM_FILES := $(patsubst src/%.erl,ebin/%.beam,${ERL_FILES})
 
-# Default testing options
-TESTOP = $(ERL) -s
+comma:= ,
+empty:=
+space:= $(empty) $(empty)
 
-# Beam file location
-EBIN = ebin/
+EDOC_SRC := $(filter-out %_test.erl, $(ERL_FILES))
+EDOC_SRC_LIST := [$(subst $(space),$(comma),$(patsubst src/%.erl,'src/%.erl', $(EDOC_SRC)))]
 
-GOTO = cd $(EBIN)
+REQUIRED_DIR_NAME := pop_2011_group_$(GROUP_NUMBER)
+PROJECT_DIR := $(notdir $(shell pwd))
+ARCHIVE_NAME :=  $(REQUIRED_DIR_NAME)_archive__$(shell date "+%Y-%m-%d__%H%M%S")__.tar.gz
+ARCHIVE_DIR := ..
 
-.PHONY: run build test clean rebuild edoc
+all: $(BEAM_FILES)
 
-# Runs when make is called without parameters
-all: build test
+ebin/%.beam: src/%.erl
+	$(ERLC) $(ERLC_FLAGS) -o ebin $<
 
-build:
-	$(ERL) -make
+start: all
+	(cd ebin && erl -eval 'main:start()')
 
-# Compile one specific .erl
-%.erl: 
-	$(CC) $(SRC)$*.erl
+test: all
+	(cd ebin && erl -noinput -eval 'eunit:test({dir, "."}, [verbose]), init:stop()')
 
-# KINDA WORKS
-# ERROR AT 5
-run: build
-	$(GOTO); $(TESTOP) main
+doc: $(BEAM_FILES)
+	erl -noshell -eval "edoc:files($(EDOC_SRC_LIST), [{dir, 'doc/html'}])" -s init stop
 
-# Remove all .beam files discarding errors
 clean:
-	@echo Removing all beams and dumps...
-	@rm -f $(SRC)*.beam $(SRC)*.dump $(SRC).#*
-	@rm -f *.beam *.dump
-	@rm -f $(EBIN)*.beam $(EBIN)*.dump
-	@echo Removing doc
-	@rm -f $(DOCDIR)*.html
+	rm -fr .#* *.dump
+	rm -fr ebin/*.beam
 	(cd doc/html && find . -name "*" -a ! -name overview.edoc -exec rm -rf {} \;)
 
-# Removes all .beam files and compiles new
-rebuild: clean build
+remove_finderinfo:
+	-xattr -d "com.apple.FinderInfo" src/*.erl include/*.hrl doc/* doc/html/*
 
-# Generates Edoc
-edoc:
-	@echo Generating $(APP_NAME) documentation from srcs
-	@erl -noshell -run edoc_run application "'$(APP_NAME)'" \
-	'"."' '[{def,{vsn,"$(VSN)"}}, {dir, "$(DOCDIR)"}, {files, "$(SRC)"}]'
+archive: clean
+ifeq ($(REQUIRED_DIR_NAME), $(PROJECT_DIR))
+	(cd $(ARCHIVE_DIR) && tar cvfz $(ARCHIVE_NAME) $(PROJECT_DIR) )
+	@echo 
+	@echo NOTE: Archive created in $(ARCHIVE_DIR)/$(ARCHIVE_NAME)
+	@echo 
+else
+	@echo Error: Wrong directory name $(PROJECT_DIR), change to $(REQUIRED_DIR_NAME)
+endif
 
-test: build
-	@echo Running eUnit...
-	erl -noshell -pa ebin \
-	-eval 'eunit:test("ebin",[verbose])' \
-	-s init stop
-
-$(EBIN)%.beam : src/%.erl Makefile
-	$(CC) -o $(EBIN) $<
