@@ -45,9 +45,9 @@ dirDocAux([], _, _,_, Html) ->
 %% ||EXPORTED FUNCTIONS||
 %% \\==================//
 
+%% @spec dirDoc(DirList::list, WebPath::list, Path::list) -> String::list
 %% @doc Returns a string containing HTML code to be used in a webserver,
-%%      generated from files in DirList and headers in HList
-%% @spec dirDoc(DirList::list, Hlist::list) -> String::list
+%%      generated from files in DirList and headers in WebPath 
 %% @since 12.05.11
 
 dirDoc(DirList, WebPath, Path)-> 

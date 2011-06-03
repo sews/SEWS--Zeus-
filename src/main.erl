@@ -1,29 +1,52 @@
+%% @author Grupp 6
+%% @version 0.1
+%% @since 12.05.11
+
 -module(main).
 -export([start/0, start/1,start/2, listen/1,listen/2]).
 
 -include("../include/config.hrl").
 
-%%EXTERNAL FUNCTIONS:
-%%start(Port) -> <Pid>
-%%Pre: A port that the server will listen on
-%%Post: A pid to the listening process
-%%S-E: Starts up the Sews server, listening on the given port
+%%//==================\\
+%%||EXTERNAL FUNCTIONS:||
+%%\\==================//
+%% start() -> Pid
+%% @spec () -> Pid
+%% @doc Starts the SEWS server using the default port
+
 start() ->
     start(?DEFAULT_PORT).
+
+%% start(Port) -> Pid
+%% @spec (Port::int) -> Pid
+%% @doc Start the SEWS server using Port as port
 
 start(Port)->
     spawn(main,listen,[Port]). 
 
+%% start(Port, FunAtom)
+%% @spec (Port::int, FunAtom::string) -> Pid
+%% @doc Start the SEWS server using Port as port
+%%      and the cache with FunAtom as given algorithm
+
 start(Port,FunAtom)->
     spawn(main,listen,[Port,FunAtom]).
 
+%% listen(Port)
+%% @spec (Port::int) -> Pid
+%% @doc Listens to the given port Port using pre-defined
+%%      TCP_OPTIONS 
 
-
-%%INTERNAL FUNCTIONS:
 listen(Port) ->
     {ok, LSocket} = gen_tcp:listen(Port, ?TCP_OPTIONS),
     cache:start(etstab),
     accept(LSocket).
+
+%% list(Port, FunAtom)
+%% @spec (Port::int, FunAtom::string) -> Pid
+%% @doc Listens to the given port Port using pre-defined
+%%      TCP_OPTIONS and starts the cache with FunAtom as
+%%      given algorithm
 
 listen(Port,FunAtom) ->
     {ok, LSocket} = gen_tcp:listen(Port, ?TCP_OPTIONS),
@@ -35,7 +58,9 @@ listen(Port,FunAtom) ->
     end,
     accept(LSocket).
 
-
+%% //===================\\
+%% ||INTERNAL FUNCTIONS:||
+%% \\===================//
 accept(LSocket) ->
     {ok, Socket} = gen_tcp:accept(LSocket),
     spawn(fun() -> handler(Socket) end),
